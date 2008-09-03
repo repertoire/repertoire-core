@@ -1,0 +1,26 @@
+<% @css_namespace = 'admin' %>
+
+<div id="header">
+  <h1>Repertoire Project Administration</h1>
+  <div class="clear"/>
+</div>
+<div id="nav">
+  <div class="nav_item"><span class="number"><%= @requests.size %></span>&nbsp;Requests</div>
+  <div class="nav_item"><span class="number"><%= @users_count %></span>&nbsp;Users</div>
+</div>
+
+<div id="container"
+<table>
+<tr>
+<th>Name</th>
+<th>Request Date</th>
+<th>Requested Role</th>
+</tr>
+<% @requests.each do |req| -%>
+<tr title="<%= req.user_note %>">
+<td><%= req.user.first_name %>&nbsp;<%= req.user.last_name %></td>
+<td><%= format_date req.created_at %></td>
+<td><%= req.role.title %></td>
+<% end -%>
+</table>
+</div>

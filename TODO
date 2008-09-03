@@ -1,0 +1,96 @@
+TODO:
+
+- erase existing github code
+
+for release 0.3.1
+
+- specs for granting/subscribing
+- make login cookie only last half an hour
+- make all emails go out to first in list
+- let user reorder list on profile page
+- let user add emails on profile page
+
+REPERTOIRE CORE:
+
+for release 0.3.2
+
+- dm is searchable
+- dm signature type
+- pagination
+- get module javascripts/stylesheets into app-level layout automatically
+
+GENERAL
+
+- update user account after profile page (wrong url)
+- figure out how to set the default page on a per-app level (e.g. after user update, where to go?)
+- reset password route needs optional element  DONE
+
+- do message handling in the layout
+- put messages into a flashing notice box (on layout?)
+- determine where which layout gets used
+- reset password should redirect to '/' with a message
+- login page should either be a partial or a dialog
+- make reviewers return a set of users  DONE
+- check that new login filters work DONE
+- filters for permissions checking  DONE
+- [ and add these before grant ]
+- specs for permissions checking
+- update specs to use valid_role (like valid_user in helper)
+- exception mailer  NOT TO DO
+- check that mails still send (out of views)  DONE
+- pass message through filter (e.g. when need to log in but have registered)
+- move mailers to controllers
+- not setting the role id properly during grant
+- not getting remote links on the users page
+- roles on admin page expand to show history  DONE
+- go directly to role request detail from notification
+- needs to email user after review
+- convert to standard documentation format
+- rake task for users of slice to declare their own permissions and roles
+- rake task for testing slice assets by soft links
+- profile page
+- revise forbidden page
+- rake tasks for sub-application to install its own roles
+- mongrel_merb_persist
+- full text search facilities?
+- figure out who gets emailed to review requests  DONE
+- rename files that are mixins _mixin
+- forms javascript: focus on first empty field
+- module readme
+
+- here's how granting should work.  
+	(1) having a role doesn't mean you should be able to grant that role; 
+	(2) granting is given by a separate permission, of the form "grant_{role name}"; 
+	(3) people with "grant_foo" permissions can grant foo or any of its descendants, or review requests for for any of these roles; 
+	(4) when a user subscribes to "foo", everyone with the "review_foo" permission gets emailed.  if there are none, foo's ancestors are checked.  if nobody exists, root admin is emailed.
+
+[ 2 options: (a) reviewed_by column in each role; (b) "review_foo" permission; (c) closest "grant_{x}" s.t. x > foo ancestor gets emailed ]
+[ only email those who are direct grantors of role ]
+
+- reasons to break grant out to separate page:
+	(1) jquery forms seems to hate dhtml selector
+	(2) how to eval. javascript that comes back as response to ajax load?
+	(3) to to put jquery events on html loaded via ajax?	
+
+- message[:notice] or @msg?
+- search support module NOT TO DO (use ILIKE)
+- transfer API for roles to repertoire_core  DONE
+- write specs for roles API  DONE
+
+- check what happens when forgot/reset password while logged in
+- specs to test password reset controller
+- develop trial application (BS) to prove repertoire_core
+- specs run to test user model, controllers for users, sessions DONE
+- figure out how to add migrations to projects that use repertoire core DONE
+- figure out why specs looking for views (& mailers) in wrong place NOT TO DO
+- how to specify redirect after signup, login, logout, etc.? -> always goes to /  NOT TO DO
+
+- activation email includes machine name 
+- registration / login in shadowbox?
+- param protection for passwords in log
+
+- put length validation on user password 3..40
+
+- user mailer using Hyperstudio's email templates  DONE
+- login form email should keep contents after failed attempt DONE
+- return status for login in a flash DONE

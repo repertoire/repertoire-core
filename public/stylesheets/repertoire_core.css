@@ -1,0 +1,26 @@
+/* utility styles */
+
+.clear  {clear: both;}
+
+.error  {color: red;}
+.notice {background:#feffd3; border:1px solid #ccc; padding:10px; margin: 0} /* animated in javascript */
+
+
+/* general styles */
+
+body {font-family: Trebuchet MS, Helvetica, Arial, sans serif; margin:0; padding:0; background:#333;}
+a {color:#24b;}
+
+#header { float:left; }
+#banner { padding: 10px 20px 10px 10px; }
+#banner h1 {font-weight:300; font-size:1.6em; color:#FF9900; border:0; text-decoration:none; margin:0;}
+
+#content {margin:0 auto; padding:20px; background:#FFFFFF; }
+form {margin:0; padding:0;}
+
+#footer { font-size:11px italic; }
+
+/* admin pages styles */
+
+.admin label {float: left;width: 8em;}
+.admin #user-image {float:left; border:0; padding-right:1em;}

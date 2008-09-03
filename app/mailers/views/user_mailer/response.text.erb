@@ -1,0 +1,14 @@
+Welcome <%= @membership.user.full_name %>,,
+
+Your Repertoire account for <%= @membership.role.name %> access has been <%= @membership.approved? ? "approved" : "denied" %>.
+<%= "Reviewer note: #{@membership.reviewer_note}" unless @membership.reviewer_note.blank? %>
+<% if @membership.approved? -%>
+http://<%= Merb::Config[:host] %><%= url(:login, :email => @user.email) %>
+
+We look forward to your participation and hope you will enjoy the experience.  Please contact us if you have any questions.
+<% end -%>
+
+Thank you,
+
+The HyperStudio Repertoire Team
+repertoire@mit.edu

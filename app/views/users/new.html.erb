@@ -1,0 +1,19 @@
+<% @css_namespace = 'admin' %>
+
+<fieldset>
+<legend>Sign up for a Repertoire account</legend>
+<%= error_messages_for @user %>
+<p>Please fill out all the fields below, and press "Register."  Our server will then send you a confirmation email to verify your email address.</p>
+<%= form_for @user, :action => url(:users) do %>
+<p><label for="email">Email</label><br/><%= text_field :email %></p>
+<p><label for="first_name">First</label><br/><%= text_field :first_name %></p>
+<p><label for="last_name">Last</label><br/><%= text_field :last_name %></p>
+<div id="password_fields">
+<p><label for="password">Password</label> <i>(5 character minimum)</i><br/>
+<%= password_field :password %></p>
+<p><label for="password_confirmation">Confirm&nbsp;Password</label><br/>
+<%= password_field :password_confirmation %></p>
+</div>
+<p><%= submit 'Register' %> or <a href="/">Cancel</a></p> 
+<% end =%>
+</fieldset>

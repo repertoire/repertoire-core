@@ -1,0 +1,17 @@
+<% @css_namespace = 'admin' %>
+
+<fieldset>
+<legend>User Profile</legend>
+<%= form_for :user, :action => url(:user, @user), :method => :put do %>
+<p><a href="http://en.gravatar.com/" title="Click to change your image" target="new">
+<img id="user-image" src="<%= gravatar_image_url(@user.email) %>"/></a>
+   <div><div><%= @user.email %></div><div><%= @user.institution %></div></div><div class="clear"</p>
+<p><%= error_messages_for @user %></p>
+<p><label for="first_name">First Name</label><br/><%= text_field :first_name %></p>
+<p><label for="last_name">Last Name</label><br/><%= text_field :last_name %></p>
+<p><label for="bio">About me</label><br/><%= text_area :bio, :rows => 8, :cols => 60 %></p>
+<a href="<%= url(:reset_password) %>">Change Password</a>
+<p><%= submit 'Update' %> or <a href="/">Cancel</a></p>
+<% end =%>
+</fieldset>
+<p id="contact">Questions or problems? Contact <a href="mailto:repertoire@mit.edu">repertoire@mit.edu</a></p>
