@@ -1,14 +1,17 @@
 CODE IN DEVELOPMENT!  DO NOT USE WITHOUT PERMISSION.
 
 
+NOTES for setting up git.
+
+- copy .gitignore from an existing project into the new repository.  this will avoid checking build artifacts and logs into the code repository
+
 NOTES for deployment documentation.
 
 - on production server: 
   * main database is hyperstudio
   * access to various schemas is controlled by user logging in
   * login name should be same as project name (e.g. website)
-  * schemas should be same as project appreviation
-
+  * schemas should be same as project abbreviation
 
 NOTES for project development.
 
