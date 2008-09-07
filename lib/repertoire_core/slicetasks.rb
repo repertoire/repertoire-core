@@ -12,9 +12,13 @@ namespace :slices do
     task :migrate => :merb_env do
       # NOTE.  dependency on merb_env causes merb to load so models available
       
-      # User.auto_migrate!
-      # Role.auto_migrate!
-      # UserRole.auto_migrate!
+      # TODO.  move this into a migration?
+      adapter = DataMapper.repository(:default).adapter
+      adapter.execute('SET search_path TO public')              # install into public schema
+      
+      User.auto_migrate!
+      Role.auto_migrate!
+      Membership.auto_migrate!
     end
     
   end
