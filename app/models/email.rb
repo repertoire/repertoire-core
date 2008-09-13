@@ -1,6 +1,6 @@
 class Email
   
-  # NOTE.  this class is not currently used
+  # NOTE.  this class is not currently used.
   
   include DataMapper::Resource
 

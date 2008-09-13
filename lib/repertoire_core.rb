@@ -121,18 +121,17 @@ if defined?(Merb::Plugins)
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   RepertoireCore.setup_default_structure!
   
-
   # Add dependencies for other RepertoireCore classes below. Example:
   dependency 'merb-mailer'
   dependency 'merb-assets'
   dependency 'merb_helpers'
 
-  dependency 'dm-constraints'  
+#  dependency 'dm-constraints'    # in datamapper 0.96, dm-constraints is broken 
   dependency 'dm-validations'
   dependency 'dm-timestamps'
   dependency 'dm-aggregates'
 
-  dependency 'dm-is-list'
   dependency 'dm-is-nested_set'
+  dependency 'dm-is-list'
   
 end
