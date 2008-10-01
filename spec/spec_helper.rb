@@ -65,6 +65,6 @@ Spec::Runner.configure do |config|
   config.include(Merb::Test::SliceHelper)
   config.include(ValidModelHashes)
   config.before(:each) do
-    Merb::Router.prepare { |r| r.add_slice(:RepertoireCore) } if standalone?
+    Merb::Router.prepare { |r| r.slice(:RepertoireCore, :path_prefix => 'repertoire_core', :name_prefix => nil) } if standalone?
   end
 end

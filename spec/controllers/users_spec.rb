@@ -53,7 +53,7 @@ describe "RepertoireCore::Users (controller)" do
   end
 
   it "should have a route for user activation" do
-    request_to("/repertoire_core/activate/1234") do |params|
+    request_to("/activate/1234") do |params|
       params[:controller].should == "Users"
       params[:action].should == "activate" 
       params[:activation_code].should == "1234"
@@ -64,7 +64,7 @@ describe "RepertoireCore::Users (controller)" do
     controller = create_user(:email => "bill@globe.com", :password => "tiger", :password_confirmation => "tiger")
     @user = controller.assigns(:user)
     User.authenticate('bill@globe.com', 'tiger').should be_nil
-    controller = get "/repertoire_core/activate/#{@user.activation_code}" 
+    controller = get "/activate/#{@user.activation_code}" 
     User.authenticate('bill@globe.com', 'tiger').should_not be_nil
   end
 
@@ -84,7 +84,7 @@ describe "RepertoireCore::Users (controller)" do
 
   protected 
   def create_user(options = {})
-    post "/repertoire_core/users/", :user => valid_user_hash.merge(options)
+    post "/users/", :user => valid_user_hash.merge(options)
   end
 
 end
