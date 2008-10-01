@@ -124,7 +124,7 @@ if defined?(Merb::Plugins)
   # Add dependencies for other RepertoireCore classes below. Example:
   dependency 'merb-mailer'
   dependency 'merb-assets'
-  dependency 'merb_helpers'
+  dependency 'merb-helpers'
 
 #  dependency 'dm-constraints'    # in datamapper 0.96, dm-constraints is broken 
   dependency 'dm-validations'
