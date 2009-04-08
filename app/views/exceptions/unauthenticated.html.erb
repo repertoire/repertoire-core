@@ -1,0 +1,23 @@
+<% default_email = @user.email unless @user.nil? %>
+<% default_email ||= params[:email] %>
+
+<div class="core">
+<fieldset id="login">
+<legend>Login</legend>
+<% @login_param = Merb::Authentication::Strategies::Basic::Base.login_param %>
+<% @password_param = Merb::Authentication::Strategies::Basic::Base.password_param %>
+<form action="<%= slice_url(:merb_auth_slice_password, :login) %>" method="POST" accept-charset="utf-8">
+  <% unless message.empty? %>
+    <div class='error'><%= message[:error] %></div>
+    <div class='notice'><%= message[:notice] %></div> 
+  <% end %>
+  <%= error_messages_for session.authentication, :header => "" %>
+  <input type="hidden" name="_method" value="PUT" />
+  <div><label for="email">Email</label><input tabindex="1" type="text" name="email" value="<%= default_email %>" id="email"></div>
+  <div><label for="password">Password</label><input tabindex="2" type="password" name="password" value="" id="password"></div>
+  <div><input class="submit" type="submit" name="submit" value="Log in" id="submit"></div>
+	<div><a href="<%= slice_url(:repertoire_core, :signup) %>">New user? Request an account.</a></div>
+	<div><a href="<%= slice_url(:repertoire_core, :forgot_password) %>">Forgot your password?</a></div>
+</form>
+</fieldset>
+</div>

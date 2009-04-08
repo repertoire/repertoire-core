@@ -18,11 +18,11 @@ class RepertoireCore::UserMailer < Merb::MailController
     render_mail :text => :activation, :layout => nil
   end
   
-  def forgot_password
+  def password_reset_key
     @user = params[:user]
     @link = params[:link]
-    Merb.logger.info "Sending Forgot Password to #{@user.email} with code #{@user.password_reset_key}"
-    render_mail :text => :forgot_password, :layout => nil
+    Merb.logger.info "Sending Password Reset Key to #{@user.email} with code #{@user.password_reset_key}"
+    render_mail :text => :password_reset_key, :layout => nil
   end    
   
   # Role membership

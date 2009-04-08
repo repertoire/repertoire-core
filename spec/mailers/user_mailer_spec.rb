@@ -1,12 +1,8 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.join( File.dirname(__FILE__), "..", "spec_helper" )
 
 include RepertoireCore
 
 describe RepertoireCore::UserMailer do
-  
-  before(:all) do
-    User.auto_migrate!
-  end
   
   def deliver(action, mail_opts= {},opts = {})
     UserMailer.dispatch_and_deliver action, mail_opts, opts
@@ -40,7 +36,7 @@ describe RepertoireCore::UserMailer do
   end
   
   it "should mention the activation link in the signup emails" do
-    the_url = UserMailer.new.url(:user_activation, :activation_code => @u.activation_code)
+    the_url = UserMailer.new.url(:activate, :activation_code => @u.activation_code)
     the_url.should_not be_nil
     deliver(:signup, @mailer_params, :user => @u, :link => the_url)
     @delivery.text.should include( the_url )

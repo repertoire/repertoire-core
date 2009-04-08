@@ -1,182 +1,185 @@
 class RepertoireCore::Users < RepertoireCore::Application
-  
-  include RepertoireCore::WhoisHelper
 
-  before :authenticate, :exclude => [ :new, :create, :activate, :forgot_password, :reset_password ]
-  # before :authorize, :with => :list_users, :only => :index
-  before :check_logged_out, :only => [ :new, :create, :activate, :forgot_password ]
+  log_params_filtered :password, :password_confirmation
+    
+  before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
+
+  #
+  # Profile page.
+  #
   
-  only_provides :html
-  
-  # Lists users
-  def index
-    @requests_count = Membership.count(:reviewer_id => nil)
-    @users = User.all(:order => [:email])
-    render
+  # User profile display - defers to edit form
+  def show(id)
+    @user = User.get(id)
+    raise NotFound unless @user
+    display @user, :edit
   end
   
-  #
-  # Profile page
-  #
-  
   # Show user profile page
-  def edit
-    @user = User.get!(params[:id])
-    
+  def edit(id)
+    only_provides :html
+    @user = User.get(id)
+    raise NotFound unless @user
     display @user
   end
   
-  # Updates user profile
-  def update
-    @user = User.get!(params[:id])
+  # User validation web service for edit and signup forms
+  def validate_user(user, id = nil)
+    only_provides :json
     
-    if @user.update_attributes(params[:user])
-      redirect '/', :message => "Updated your account."
+    @user = id ? User.get(id) : User.new
+    @user.attributes = user
+    
+    display @user.valid? || @user.errors_as_params
+  end
+  
+  # Updates user profile.  Not for password changes.
+  def update(id, user)
+    @user = User.get(id)
+    raise NotFound unless @user
+    
+    user[:password] = user[:password_confirmation] = nil   # close security hole by disallowing password changes
+    
+    if @user.update_attributes(user)
+      redirect '/', :message => { :notice => "Updated your account." }
     else
-      render :edit
+      display @user, :edit
     end
   end
   
   #
-  # Registration
+  # Registration.
   #
       
-  # Displays the new form signup
-  def new
-    @user = User.new(params[:user] || {})
+  # Displays the form for user signup
+  def new(user = {})
+    only_provides :html
+    @user = User.new(user)
     display @user
   end
 
   # Registers a new user and delivers the authorization email
-  def create
-    cookies.delete :auth_token
-
-    @user = User.new(params[:user])
+  # TODO.  should we accept registrations to the same email so long as the account is unactivated?
+  def create(user)
+    @user = User.new(user)
+    # validate and email activation code
     if @user.save
       @user.reload
       deliver_email(:signup, @user, {:subject => "Please Activate Your Account"}, 
                                     {:user => @user,
-                                     :link => absolute_url(:user_activation, :activation_code => @user.activation_code) })
-      redirect '/', :message => "Created your account.  Please check your email to complete the registration process."
+                                     :link => absolute_url(:activate, :activation_code => @user.activation_code) }) 
+      redirect '/', :message => { :notice => "Created your account.  Please check your email." }
     else
+      message[:error] = "User could not be created"
       render :new
     end
   end
   
   # Activates a user from email after registration
-  def activate
-    self.current_user = User.first(:activation_code => params[:activation_code])
-    # TODO.  we require user to activate immediately after signup (authenticated?)  too restrictive?
-    if authenticated? && !current_user.activated?
-      Merb.logger.info "Activated #{current_user}"
-      msg = "Your account has been activated.  Welcome to Repertoire."
-      current_user.activate
-      update_institution!(current_user)
-      deliver_email(:activation, current_user, {:subject => "Welcome"},
-                                               {:user => current_user,
-                                                :link => absolute_url(:login, :email => current_user.email)})
-    else
-      msg = "Unknown activation code.  Please try again."
+  def activate(activation_code)
+    session.abandon!
+    @user = User.first(:activation_code => activation_code)
+    raise NotFound unless session.user = @user
+    
+    if session.authenticated? && !session.user.activated?
+      User.transaction do
+        session.user.activate
+        deliver_email(:activation, session.user, {:subject => "Welcome"},
+                                                 {:user => session.user,
+                                                  :link => absolute_url(:login, :email => session.user.email)})
+      end
     end
-    redirect '/', :message => msg
+    
+    redirect '/', :message => { :notice => "Your account has been activated.  Welcome to Repertoire." }
   end
   
   #
   # Password management
   #
-  
-  # Initiates a password reset by prompting for email
+
+  # Display form for resetting a user password  
   def forgot_password
-    @email = params[:email]
-    @user = User.first(:email => @email)
-    unless @user.nil?
-      raise Unauthorized if authenticated? && @user != current_user
-      @user.forgot_password!
-      deliver_email(:forgot_password, @user, {:subject => "Request to change your password"}, 
-                                             {:user => @user,
-                                              :link => absolute_url(:reset_password, :key => @user.password_reset_key)})
-      redirect "/", :message => "We've emailed you a link to reset your password."
-    else
-      @notice = "Could not find your email.  Please try again." unless @email.nil?
-      render
-    end
-  end
-  
-  # reset_password is the link given in the email
-  def reset_password
-    @user = User.first(:password_reset_key => params[:key]) || current_user
-    if @user.nil?
-      redirect "/", :message => "Unknown password reset code."
-    else
-      self.current_user = @user
-      render
-    end
-  end
-  
-  # action to change password on reset
-  def update_password  
-    @user = current_user
-    if params[:user][:password].nil?
-      return redirect(url(:reset_password, :key => @user.password_reset_key), :message => "You must enter a password")
-    end
+    only_provides :html    
+    session.abandon!
     
-    # if current user changing password, make sure they know existing one
-    unless @user.password_reset_key || User.authenticate(@user.email, params[:current_password])
-      return redirect(url(:reset_password, :key => @user.password_reset_key), :message => "Incorrect current password")
+    render
+  end
+  
+  # Initiates a password change by emailing reset key to user's email
+  def password_reset_key(email = nil)
+    session.abandon!
+    if @user = User.first(:email => email)    
+      User.transaction do
+        @user.forgot_password!
+        deliver_email(:password_reset_key, @user, {:subject => "Request to change your password"}, 
+                                                  {:user => @user,
+                                                   :link => absolute_url(:reset_password, :key => @user.password_reset_key)})
+      end
+      redirect '/', :message => { :notice => "We've emailed a link to reset your password." }
+    else
+      message[:error] = "Unknown user email."
+      render :forgot_password
+    end
+  end
+  
+  # Change password form: either for currently logged in user, or via password reset key
+  # If password reset key is provided, has the side effect of temporarily logging in user
+  def reset_password(key = nil)
+    only_provides :html
+    @user = session.user || User.first(:password_reset_key => key)
+    raise NotFound unless @user
+
+    session.user = @user
+    display @user, :reset_password
+  end  
+  
+  # Password change validation service
+  # TODO.  like the signup/login forms, insecure unless processed via https. also open to brute-force attacks
+  def validate_reset_password(user, current_password = nil)
+    only_provides :json
+
+    @user = session.user
+    @user.attributes = user
+    msgs = {}
+    
+    unless @user.password_reset_key || User.authenticate(@user.email, current_password)
+      msgs = { :current_password => ['Incorrect current password'] }
     end
 
-    @user.password = params[:user][:password]
-    @user.password_confirmation = params[:user][:password_confirmation]
+    display (@user.valid? && msgs.empty?) || msgs.merge(@user.errors_as_params)
+  end
+  
+  # action to update a user's password.  only allowed if user signed in via a password reset key,
+  # or can confirm their own credentials
+  def update_password(user = {}, current_password = nil)
+    @user = session.user
+    
+    # make sure user changing password knows existing one or logged in via a reset key
+    raise Merb::ControllerExceptions::Unauthorized unless @user.password_reset_key || User.authenticate(@user.email, current_password)
+
+    @user.password              = user[:password]
+    @user.password_confirmation = user[:password_confirmation]
   
     if @user.save
       @user.clear_forgotten_password!
-      redirect "/", :message => "Password Changed"
+      redirect '/', :message => { :notice => "Password Changed" }
     else
-      redirect url(:reset_password, :key => @user.password_reset_key), :message => "Password not changed: Please try again"
-    end     
+      message[:error] = "Password not changed: Please try again"
+      render :reset_password
+    end
   end
   
   #
   # Role membership
   #
   
-  # not used yet
-  def subscribe
-    raise NotImplementedError, "role subscription implementation delayed until we have a proper project-listing UI"
-    # deliver_email(:request, role.reviewer, {:subject => "Repertoire role request"}, {:membership => @membership}
-  end
+  #
+  # Implementing a full admin UI for role memberships put off until we decide on usefulness of cross-project RBAC
+  #
   
-  # show requests which current user is authorized to review
-  def requests
-    # TODO.  add full text search
-    # TODO.  add pagination
-    # TODO.  allow limiting by current project?
-    # TODO.  limit by parent so we only get direct to review
-    @users_count = User.count
-    @requests = Membership.all(:order => [:updated_at.desc], :reviewer_id => nil)
-    render
-  end
-  
-  # show roles the current user is authorized to grant
-  def grant
-    # TODO.  authorization filter that makes sure current user has grant[zzz] permissions
-    
-    @role = Role.get(params[:role_id])
-    @user = User.get(params[:user_id])
-    @note = params[:note]
-    
-    if @role && @user
-      current_user.grant(@role, @user, @note)                            # Exceptions render via merb system
-      render "Granted #{@role.title} to #{@user.full_name}", :layout => false
-    else
-      @roles = current_user.grantable_roles.sort
-      render :grant
-    end
-  end
-  
-  def review
-    #deliver_email(:response, role.reviewer, {:subject => "Your request has been reviewed"}, {:user => current_user}) )
-  end
+  #
+  # Utility functions
+  #
   
   protected
 
@@ -184,22 +187,6 @@ class RepertoireCore::Users < RepertoireCore::Application
     from = Merb::Slices::config[:repertoire_core][:email_from]
     RepertoireCore::UserMailer.dispatch_and_deliver(action, params.merge(:from => from, :to => to_user.email), 
                                                     send_params)
-  end
-  
-  private
-  
-  def check_logged_out
-    throw :halt, 'Please log out first' if current_user
-  end
-  
-  def update_institution!(user)
-    begin
-      props = lookup_domain(user.email)
-      user.institution = props['OrgName']
-      user.save!
-    rescue WhoisException => e
-      Merb.logger.warn(e)
-    end
   end
   
 end

@@ -1,12 +1,24 @@
 require 'whois'
 
 module RepertoireCore
-  module WhoisHelper
-    
-    def lookup_domain(email)
-      domain = email.match(/@(.*)$/)[1].downcase
-      result = Whois::Whois.new(domain).search_whois
-      whois_to_hash(result)
+  
+  # Ecapsulate access to the whois domain lookup service
+  class WhoisHelper
+
+    def lookup!(user)
+      begin 
+        domain = user.email.match(/@(.*)$/)[1].downcase
+        result = Whois::Whois.new(domain).search_whois
+        props = whois_to_hash(result)
+      
+        user.institution      = props['OrgName']
+        user.institution_code = props['OrgID']
+        return true
+
+      rescue Whois::WhoisException => e
+        Merb.logger.warn(e)
+        return false
+      end
     end
   
     private
@@ -21,6 +33,6 @@ module RepertoireCore
       end
       props
     end
-    
+  
   end
 end

@@ -1,19 +1,35 @@
-<% @css_namespace = 'admin' %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.js" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.form.js" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/rep.ajax-validate.js" %>
 
-<fieldset>
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/rep.ajax-validate.css" %>
+
+<script language="javascript">
+  $(document).ready(function() {
+  	$('#signup form').ajaxValidate({ 
+  	  url:      '<%= slice_url(:repertoire_core, :validate_user) %>',
+  	  delegate: { 'user[password_confirmation]': 'user[password]' }
+  	});
+    $('#signup form #user_email').focus();
+  });
+</script>
+
+<div class="core">
+<fieldset id="signup">
 <legend>Sign up for a Repertoire account</legend>
 <%= error_messages_for @user %>
-<p>Please fill out all the fields below, and press "Register."  Our server will then send you a confirmation email to verify your email address.</p>
-<%= form_for @user, :action => url(:users) do %>
-<p><label for="email">Email</label><br/><%= text_field :email %></p>
-<p><label for="first_name">First</label><br/><%= text_field :first_name %></p>
-<p><label for="last_name">Last</label><br/><%= text_field :last_name %></p>
-<div id="password_fields">
-<p><label for="password">Password</label> <i>(5 character minimum)</i><br/>
-<%= password_field :password %></p>
-<p><label for="password_confirmation">Confirm&nbsp;Password</label><br/>
-<%= password_field :password_confirmation %></p>
-</div>
-<p><%= submit 'Register' %> or <a href="/">Cancel</a></p> 
+<% unless message.empty? %>
+  <div class='error'><%= message[:error] %></div>
+  <div class='notice'><%= message[:notice] %></div>   
+<% end %>
+<p>Please fill out all the fields below.  Our server will email you an access code.</p>
+<%= form_for @user, :action => resource(:users) do %>
+  <div><label for="email">Email</label><%= text_field :email %><div class='validate'></div></div>
+  <div><label for="first_name">First</label><%= text_field :first_name %><div class='validate'></div></div>
+  <div><label for="last_name">Last</label><%= text_field :last_name %><div class='validate'></div></div>
+  <div><label for="password">Password</label><%= password_field :password %><div class='validate'></div></div>
+  <div><label for="password_confirmation">Confirm&nbsp;Password</label><%= password_field :password_confirmation %></div>
+  <div><%= submit 'Register' %></div>
 <% end =%>
 </fieldset>
+</div>

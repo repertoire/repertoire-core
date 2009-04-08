@@ -1,10 +1,11 @@
 module ValidModelHashes
   def valid_user_hash
-    { :email                  => "#{String.random}@example.com",
+    { :email                  => "#{String.random}@mit.edu",
       :first_name             => String.random,
       :last_name              => String.random,
-      :password               => "sekret",
-      :password_confirmation  => "sekret"
+      :shortname              => String.random,
+      :password               => "77MassAve",
+      :password_confirmation  => "77MassAve"
     }
   end
 end

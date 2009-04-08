@@ -1,30 +1,46 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
-require 'merb-core/version'
-require 'merb-core/test/tasks/spectasks'
-require 'merb-core/tasks/merb_rake_helper'
 
-NAME = "repertoire_core"
+require 'merb-core'
+require 'merb-core/tasks/merb'
+
+GEM_NAME = "repertoire_core"
 AUTHOR = "Christopher York"
 EMAIL = "yorkc@mit.edu"
-HOMEPAGE = "http://hyperstudio.mit.edu"
-SUMMARY = "RepertoireCore provides logins, registration, roles, and administration to Repertoire projects"
-GEM_VERSION = "0.3.1"
+HOMEPAGE = "http://hyperstudio.mit.edu/repertoire"
+SUMMARY = "RepertoireCore provides registration and role based authorization to Repertoire projects"
+GEM_VERSION = "0.3.2"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
-  s.name = NAME
+  s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.extra_rdoc_files = ["README", "LICENSE", "TODO", "INSTALL"]
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-slices', '>= 0.9.4')
+
+  s.add_dependency('merb-mailer',    '>= 1.0.11')
+  s.add_dependency('merb-assets',    '>= 1.0.11')
+  s.add_dependency('merb-action-args',    '>= 1.0.11')
+  s.add_dependency('merb-auth-core', '>= 1.0.11')
+  s.add_dependency('merb-auth-more', '>= 1.0.11')
+  s.add_dependency('merb-auth-slice-password',    '>= 1.0.11')
+  s.add_dependency('merb-helpers',   '>= 1.0.11')
+  s.add_dependency('merb-param-protection', '>= 1.0.11')
+  s.add_dependency('merb-slices',    '>= 1.0.11')
+  s.add_dependency('dm-core',        '>= 0.9.11')
+  s.add_dependency('dm-validations', '>= 0.9.11')
+  s.add_dependency('dm-timestamps',  '>= 0.9.11')
+  s.add_dependency('dm-aggregates',  '>= 0.9.11')
+  s.add_dependency('dm-is-nested_set', '>= 0.9.11')
+  s.add_dependency('dm-is-list',     '>= 0.9.11')
+  s.add_dependency('whois',          '>= 0.4.2')  
+  
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")
 end
@@ -33,16 +49,24 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc "Install RepertoireCore as a gem"
-task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+desc "Install the gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
 end
 
-namespace :jruby do
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
+end
 
-  desc "Run :package and install the resulting .gem with jruby"
-  task :install => :package do
-    sh %{sudo jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
   end
-  
 end
+
+require 'spec/rake/spectask'
+require 'merb-core/test/tasks/spectasks'
+desc 'Default: run spec examples'
+task :default => 'spec'

@@ -1,7 +1,7 @@
 class Role
   include DataMapper::Resource
 
-  property :id,                         Integer,  :serial   => true
+  property :id,                         Serial
   property :name,                       String,   :nullable => false, :unique => true
   property :title,                      String
   
@@ -31,6 +31,10 @@ class Role
   
   def expand_grants
     Role.self_and_descendants(*grants)
+  end
+  
+  def to_role
+    self
   end
   
   class << self

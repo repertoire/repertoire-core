@@ -1,0 +1,7 @@
+/* default css for repertoire core pages */
+
+.core .clear              { clear: both; }
+.core #banner             { float: right; margin-bottom: 10px; }
+.core label               { float: left; clear: both; margin-top: 5px; }
+.core input               { float: left; clear: left; }
+.core #submit             { margin-top: 8px; }

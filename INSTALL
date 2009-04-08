@@ -1,0 +1,60 @@
+Installing Repertoire Core into your application gives you access to Hyperstudio user registration, password management, and authorization control features in your merb application.  It also provides a simple set of commonly-used libraries, e.g. jquery and jquery-ui, and Hyperstudio ajax plugins that extend them.
+
+To install Repertoire Core:
+
+# download and install the gem on your development workstation
+git clone git@github.com:repertoire/repertoire-core.git
+cd repertoire-core
+sudo rake install
+
+# add the slice as a regular dependency for your application (dependencies.rb)
+dependency 'repertoire_core'
+
+# alter your router to mount the Repertoire Core slice
+Merb::Router.prepare do
+  authenticate do
+    ... your application routes that require login
+  end
+
+  slice(:merb_auth_slice_password)											                # i.e. user login/logout
+  slice(:repertoire_core, :name_prefix => nil, :path_prefix => "")    # i.e. user registration/activation/profile/password mgmt
+                                                        # see the merb slices documentation for info on name_prefix and path_prefix
+end
+
+# add the Repertoire user mixin to the default merb user (app/models/user.rb).  then comment out or delete the
+# 'login' property, since Repertoire uses email logins.  Your entire user model might look like this:
+class User
+  include DataMapper::Resource
+  include RepertoireCore::Mixins::User
+  property :id, Serial
+# property :login, String    <<< n.b. commented out
+end
+
+# Insure that your database is set up according to Repertoire standards, with your application tables loaded into a 
+# separate PostgreSQL schema and connecting by a project-specific user.
+# http://hyperstudio.mit.edu:81/groups/developer/wiki/c6a82/Repertoire_Database_Layout.html
+
+# Alter database.yml to give the rake tasks access to your PostgreSQL public schema, which will store user, role, membership models:
+# (Snippet below does not need to be configured)
+rake:
+  <<: *defaults
+  repositories:
+    core:
+      # admin access to public repertoire core tables
+      adapter:  postgresql
+      database: hyperstudio_development
+      username: postgres
+      password: 
+      host:     localhost
+
+# run the rake install task to transfer templates and assets to your application and prime your database
+rake slices:repertoire_core:install
+
+# start up your application, and view the registration registration pages at http://localhost:4000/signup
+# now would be a good time to double-check the email and database configuration by attempting to sign up for an account
+
+# type rake audit:routes in your app for other relevant URLs
+
+# N.B. do not run rake slices:repertoire_core:install on a production environment!!  It uses DataMapper auto_migrate, which will 
+# immediately delete all of your users and roles.  Instead, use the task just once to set up the tables on the server, and thereafter
+# you can re-use the ones that are already there.

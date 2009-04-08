@@ -1,0 +1,119 @@
+=Nascent Repertoire Core FAQ=
+
+
+Q. How do I change the layout for the registration/etc pages, respond-to email address?
+
+A. In init.rb:
+
+Merb::BootLoader.before_app_loads do
+  Merb::Slices::config[:repertoire_core][:layout]     ||= :my_admin_layout     # layout for your own registration/password pages
+  Merb::Slices::config[:repertoire_core][:email_from] ||= 'repertoire@mit.edu'
+end
+
+
+Q. How do I add or replace user lookup services?
+
+A. By default, Repertoire core looks up user domains in the Whois database when they activate their email address.  This allows it to associate users with institutions, robustly offloading the task of checking credentials and other security to the institution's
+email login system.  (Kudos to Facebook for figuring out such a low-maintenance and difficult to spoof system for determining institutional
+credentials.)  To add another user identification service, declare a helper class that updates the user's fields and returns a non-nil
+value on success.
+
+class MyLookupHelper
+  def lookup!(user)
+    case user.email    # a real example would probably access an outside directory service (e.g. ldap or finger)
+    when /@mit.edu$/: user.institution_code = "MIT-2"
+    else nil
+    end
+  end
+end
+
+Merb::BootLoader.before_app_loads do
+  Merb::Slices::config[:repertoire_core][:lookup_helpers] << MyLookupHelper.new
+end
+
+The lookup handler polls helpers in order, stopping when one succeeds.  You can clear the list of handlers to disable lookup, replace
+it with you own to disable the defaults, or rearrange the polling order.
+
+
+Q. How do I use a different SMTP mail server?
+
+A. In init.rb:
+
+Merb::BootLoader.before_app_loads do
+  ....
+  Merb::Mailer.config = {
+    :host   => 'smtp.gmail.com',          # example: use google mail smtp instead of MIT
+    :port   => '587',
+    :user   => 'repertoire.hyperstudio',
+    :pass   => '77MassAve',
+    :auth   => :plain
+  }
+end
+
+
+Q. How do I add project-specific information about users to the data model?
+
+A. This is why Repertoire Core mixes its own fields into your user model.  Simply add a new table to store 
+your per-project info, and then add an association to the user model in your application.  For example,
+
+class User
+  include DataMapper::Resource
+  include RepertoireCore::Mixins::User
+
+  property :id, Serial
+
+  has n, :enrollments																					# project-specific
+  has n, :courses,         :through => :enrollments           # ditto
+end
+
+You can also add your own methods to the user model.  Don't add new properties: instead use a 1-to-1 relation to
+your project-specific user data, which is stored in your project's PostgreSQL schema.
+
+
+Q. How do I redirect to another URL after user activation (or signup/password reset/etc.)?
+
+A. The same way that merb-auth-password-slice allows you to define 'after' controller filters to redirect on login and logout.
+Repertoire Core comes with controller stubs set up for exactly this.  Install them with 'rake slices:repertoire_core:stubs' 
+and modify the controller mixins in the 'slices/repertoire_core' directory.
+
+
+Q. The default registration/profile/password pages are plain and ugly.  How do I reconfigure them?
+
+A. Override the default CSS in your project's stylesheets.  First set the layout to your own project-specific design.  Then define a new containing id to surround the entire page contents.  Define CSS styles relative to it.  These styles will always override the ones
+defined in the Repertoire Core files.  You can also use jquery to add new functionality to the existing pages.  Or see Merb slice
+documentation for info on completely over-riding views.
+
+
+Q. Can I access Repertoire core's administrative functions as a web service?
+
+A. Yes.  The controller methods are written to render HTML pages or for use with ajax web services.  With the exception of the form
+validation actions, the latter approach is untested, however.
+
+
+Q. Does Repertoire core come with a default login page instead of Merb's?
+
+A. Yes, but it would require lots of monkey-patching to make it over-ride Merb's from the get-go.  To use it as a basis for your own login page:
+
+  rake slices:repertoire_core:freeze:views
+  cp slices/repertoire_core/app/views/exceptions/unauthenticated.html.erb app/views/exceptions
+
+
+Q. How do I require login for a given page?
+
+A. Repertoire core delegates authentication to the merb-auth-slice-password plugin.  The README in its source will give detailed information.  But in general, in routes.rb:
+
+  authenticate do
+    resource :posts
+  end
+
+
+Q. How do I require authorization for a given page?
+
+A. Use a before controller filter that checks whether session.user has one of the necessary roles
+
+before :ensure_authorized, :with => [:system_administrator, :message => 'You need sysadmin role to remove the hard drive']
+
+
+Q. Does Repertoire core have routing extensions, or only controller filters for authorization?
+
+A. For now, only controller filters.

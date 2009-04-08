@@ -1,13 +1,4 @@
 require File.dirname(__FILE__) + '/spec_helper'
-require 'dm-core'
-
-describe RepertoireCore do
-  
-  before(:all) do
-    DataMapper.setup(:default, 'sqlite3::memory:')
-  end 
-  
-end
 
 describe "RepertoireCore (module)" do
   
@@ -41,7 +32,7 @@ describe "RepertoireCore (module)" do
   end
   
   it "should have a :layout config option set" do
-    RepertoireCore.config[:layout].should == :repertoire_core
+    RepertoireCore.config[:layout].should == :core
   end
   
   it "should have a dir_for method" do
