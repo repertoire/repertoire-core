@@ -126,6 +126,15 @@ A.                     granted_by not set | granted_by is set
        subscribable  | open membership    | can be granted & subscribed
 
 
+Q. Is there only a single namespace for roles, across all projects?
+
+A. Yes.  Early versions of the data model included a "project context" field that identified each role's project.  But it quickly became
+clear that the project context and role name only occur together, and serve to identify a single system role.  Plus it invited confusion:
+does "editor" in project "aop" mean the same thing as "editor" in project "ter"?  Probably not.
+
+The conclusion was to use a single namespace for roles, and encourage projects to use prefixes: :ber_editor, cfrp_contributor, etc.
+
+
 Q. Is there a quick way to reset a user's password?
 
 A. Easiest way is to have them use the password reset by email feature.  BUT, in a pinch you can use the model API to modify accounts:
