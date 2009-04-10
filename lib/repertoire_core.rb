@@ -4,9 +4,9 @@ if defined?(Merb::Plugins)
   
   raise "RepertoireCore: Currently only datamapper is supported ORM" unless Merb.orm == :datamapper
   
-  require 'repertoire_core/authorized_helper'
   require 'repertoire_core/exceptions'
   require 'repertoire_core/whois_helper'
+  require 'repertoire_core/mixins/authorization_mixin'
   require 'repertoire_core/mixins/user_mixin'
   require 'repertoire_core/mixins/dm/resource_mixin'
   require 'repertoire_core/smtp_tls'
@@ -29,7 +29,7 @@ if defined?(Merb::Plugins)
   Merb::Slices::config[:repertoire_core][:lookup_helpers] ||= [ RepertoireCore::WhoisHelper.new ]
   
   # extend controllers to allow authorization checks
-  Merb::Controller.send(:include, RepertoireCore::AuthorizedHelper)
+  Merb::Controller.send(:include, RepertoireCore::Mixins::Authorization)
   
   # All Slice code is expected to be namespaced inside a module
   module RepertoireCore

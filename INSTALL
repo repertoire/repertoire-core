@@ -30,6 +30,10 @@ class User
 # property :login, String    <<< n.b. commented out
 end
 
+# tell Merb's password login slice that you want to use User.email rather than User.login to identify users.  there's already a
+configuration suggestion to do this - just uncomment it (merb/merb-auth/setup.rb)
+Merb::Plugins.config[:"merb-auth"][:login_param]    = :email
+
 # Insure that your database is set up according to Repertoire standards, with your application tables loaded into a 
 # separate PostgreSQL schema and connecting by a project-specific user.
 # http://hyperstudio.mit.edu:81/groups/developer/wiki/c6a82/Repertoire_Database_Layout.html

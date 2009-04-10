@@ -7,10 +7,14 @@ namespace :slices do
     task :preflight do
     end
     
-    # convenience task to over-write Merb's login page with our own
-    desc "Install login page"
-    task :freeze_login do
+    # copy the login page to the client app's view directory
+    desc "Install default login page"
+    task :login_page do
+      Merb.logger.info "Copying default login page to your app's exception views, unless one is already present"
+      src  = File.dirname(__FILE__) / '..' / '..' / 'app' / 'views' / 'exceptions' / 'unauthenticated.html.erb'
+      dest = Merb.root / 'app' / 'views' / 'exceptions' / 'unauthenticated.html.erb'
       
+      cp src, dest unless File.exists?(dest)
     end
     
     # implement this to perform any database related setup steps

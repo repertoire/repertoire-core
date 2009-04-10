@@ -7,7 +7,7 @@ module Merb
         date ? date.strftime("%m.%d.%Y") : "??.??.????"
       end
 
-      # @return a url to identify the given user (by email)
+      # @return a url to identify the given user's profile photo
       def gravatar_image_url(email, size=40)
         default_gravatar_uri = request.protocol + request.host + public_path_for('gravatar.png')
         default_gravatar_uri = URI.escape(default_gravatar_uri, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))

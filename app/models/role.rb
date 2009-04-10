@@ -17,10 +17,13 @@ class Role
   property :created_at,                 DateTime
   property :updated_at,                 DateTime
   
-  # N.B. if we used role.lft as the self-referential foreign key for granted_by instead of role.id, 
+  # TODO if we used role.lft as the self-referential foreign key for granted_by instead of role.id, 
   #      doing grant checks would be a simple join...  not top priority since grants are very rare
   
-  
+  # N.B. The subscribable property determines whether an empty grantor means "open to everyone" or
+  #      "open to no-one."  A non-subscribable role with no grantor can only be granted by the command line
+  #      administrator.  A subscribable role with no grantor can be joined by anyone, without review.
+      
   #
   # Role status
   #
@@ -47,10 +50,10 @@ class Role
   
   class << self
     
-    # Grant a role to user by fiat, without any review process.  Returns the approved membership record,
-    #   whose reviewed_by field will be nil.
+    # Grant a role to user by fiat, without any review process. Intended primarily for use in command-line 
+    # user administration.  Do not call programmatically.
     #
-    # Intended primarily for use in command-line user administration.  Do not call programmatically.
+    # @returns the approved membership record, with a nil reviewed_by field
     #
     def grant!(role_name, user, message=nil)
       Merb.logger.warn("Deus ex machina grant of :#{role_name} to #{user.full_name} at #{Time.now}")
@@ -72,6 +75,12 @@ class Role
     #
     # later...
     #   Role[:admin].open_membership?
+    #
+    # N.B. it is rarely necessary to look up a role.  Instead use role symbols:
+    #   jack.grant(:editor, jill)
+    #
+    # @returns the role object
+    #
     def [](name, title=nil)
       if @declarator
         role = Role.first_or_create({:name => name}, {:title => title})
@@ -102,14 +111,25 @@ class Role
         @declarator = nil
       end
     end
+
+    # 
+    # Internal helpers
+    #
     
-    # return a complete list of all of the roles implied by a base set
+    # Calculates a complete list of all of the roles implied by a base set
+    #
+    # @params the base role objects
+    #
+    # @returns a list of roles
     def self_and_descendants(*roles)
       spans = roles.map{ |r| (r.lft)..(r.rgt) }
       spans = spans.map{ |s| s.to_a }.flatten.uniq
       Role.all(:lft.in => spans)
     end
     
+    # Loads a set of roles from their symbol equivalents
+    #
+    # @returns the role objects
     def to_roles(*role_names)
       # load a series of mixed roles and symbols
       load_roles = role_names.find_all { |r| r.is_a?(Symbol) }
@@ -121,11 +141,17 @@ class Role
   # 
   # Small DSL for declaring role hierarchies
   #
-  
+  # Primarily for use in migrations
+  #  
   class Declarator
     attr_accessor :state
   
     # Declare the current role implies (i.e. is parent for) others
+    #
+    #   Role.declare do
+    #     Role[:manager].implies(:member)
+    #   end
+    #
     def implies(*others)
       others.each do |name|
         r = Role.first_or_create(:name => name)
@@ -136,6 +162,16 @@ class Role
       self
     end
     
+    # Declare the current role can grant membership for others.
+    #
+    # If the other roles have no parent yet, the current role becomes
+    # their parent.
+    #
+    #   Role.declare do
+    #     Role[:manager].implies(:secretary).implies(:member)
+    #     Role[:manager].grant(:member)
+    #   end
+    #
     def grants(*others)
       others.each do |name|
         r = Role.first(:name => name) || Role.new(:name => name)       # delay saving since dm-is-nested-set sets parent
@@ -146,13 +182,29 @@ class Role
       self.state = Role.first(:name => others.last)
       self
     end
-    
+
+    # Declare the current role should be open to subscription requests.
+    #
+    # The existing grantor role is unchanged.  Calling open on role without
+    # a grantor makes role membership open: no review required.
+    #
+    #   Role.declare do
+    #     Role[:member].open
+    #   end  
     def open
       self.state.subscribable = true
       self.state.save!
       self
     end
     
+    # Declare the current role should have closed membership.
+    #
+    # Any existing grantor declaration is cleared.  After calling close on
+    # a role only the command line can be used to add/remove members.
+    #
+    #   Role.declare do
+    #     Role[:member].close
+    #   end
     def close
       self.state.subscribable = false
       self.state.granted_by   = nil

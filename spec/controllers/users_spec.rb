@@ -6,10 +6,9 @@ describe RepertoireCore::Users do
 
   # TODO.  for unclear reasons, slice_url fails (merb 1.0.11) when called within test harness
   #        so tests below fail
-
   
   before :each do
-    User.all.destroy!
+    User.auto_migrate!
   end
 
   it 'allows signup' do

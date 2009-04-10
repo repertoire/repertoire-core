@@ -90,12 +90,10 @@ A. Yes.  The controller methods are written to render HTML pages or for use with
 validation actions, the latter approach is untested, however.
 
 
-Q. Does Repertoire core come with a default login page instead of Merb's?
+Q. How do I get the default login page to use same layout as the rest of the pages?
 
-A. Yes, but it would require lots of monkey-patching to make it over-ride Merb's from the get-go.  To use it as a basis for your own login page:
-
-  rake slices:repertoire_core:freeze:views
-  cp slices/repertoire_core/app/views/exceptions/unauthenticated.html.erb app/views/exceptions
+A. The login page uses the application layout unless specified otherwise.  You can copy the Repertoire core layout into your layouts
+directory if necessary.
 
 
 Q. How do I require login for a given page?
@@ -117,3 +115,39 @@ before :ensure_authorized, :with => [:system_administrator, :message => 'You nee
 Q. Does Repertoire core have routing extensions, or only controller filters for authorization?
 
 A. For now, only controller filters.
+
+
+Q. How do I make a role closed to subscription or granting other than what I do at the command line.  Conversely, 
+how do I make a role that can be joined without a review process.
+
+A.                     granted_by not set | granted_by is set
+                     ---------------------|----------------------------
+   not subscribable  | closed membership  | can only be granted
+       subscribable  | open membership    | can be granted & subscribed
+
+
+Q. Is there a quick way to reset a user's password?
+
+A. Easiest way is to have them use the password reset by email feature.  BUT, in a pinch you can use the model API to modify accounts:
+
+		# merb -i
+		>> u = User.first(:email => 'user@company.com')
+		>> u.password = u.password_confirmation = 'NEWPASSWORD'
+		>> u.save!
+		
+There's absolutely no way to see a user's current password, since both it and the salt are md5 encrypted.  However, you can do all
+basic user admin from the command line, including creating accounts, activating them, resetting passwords, and granting roles.  See the
+User model API for details.
+
+
+=Common Problems=
+
+Q. I can't get Merb's login page to work, even though the registration and activation process is fine and I can find the user in the console.
+
+A. Make sure merb-auth is configured to use User.email to identify users (in merb/merb-auth/setup.rb)
+
+
+Q. I get a SMTP socket error when I test the registration pages on my workstation.
+
+A. The system must have internet access in order to send emails.  (Not a problem on a production install, since the registration
+pages are only available via the internet).

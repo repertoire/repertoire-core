@@ -23,16 +23,6 @@ class RepertoireCore::Users < RepertoireCore::Application
     display @user
   end
   
-  # User validation web service for edit and signup forms
-  def validate_user(user, id = nil)
-    only_provides :json
-    
-    @user = id ? User.get(id) : User.new
-    @user.attributes = user
-    
-    display @user.valid? || @user.errors_as_params
-  end
-  
   # Updates user profile.  Not for password changes.
   def update(id, user)
     @user = User.get(id)
@@ -47,6 +37,20 @@ class RepertoireCore::Users < RepertoireCore::Application
     end
   end
   
+  #
+  # Web services
+  #
+  
+  # User validation web service for edit and signup forms
+  def validate_user(user, id = nil)
+    only_provides :json
+    
+    @user = id ? User.get(id) : User.new
+    @user.attributes = user
+    
+    display @user.valid? || @user.errors_as_params
+  end
+    
   #
   # Registration.
   #

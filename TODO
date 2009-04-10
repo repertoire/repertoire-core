@@ -10,12 +10,11 @@ Potential features:
 
 Outstanding items:
 
+- README	
 - specs for authorization filter in controller
 - specs for institutional filter in controller
 
-- rake tasks for sub-application to install its own roles
-- README	
-
+- rake tasks for sub-application to install its own roles  DONE
 - specs for granting/subscribing  DONE
 - specs for webservice methods  DONE
 - default css  DONE
