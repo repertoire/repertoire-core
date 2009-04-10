@@ -112,6 +112,39 @@ A. Use a before controller filter that checks whether session.user has one of th
 before :ensure_authorized, :with => [:system_administrator, :message => 'You need sysadmin role to remove the hard drive']
 
 
+Q. Sure, that provides access control over actions, but what's the best way to avoid presenting users with the unavailable
+options in the first place?
+
+A. The most direct way is with conditional erb:
+
+<% if session.user.has_role?(:sysadmin) %>
+  <div id="delete_everything_tab">...</div>
+<% end %>
+
+But over time that litters your views with progressively more and more authorization logic.  Another approach is to offload
+the task to css.  List all of the user's role names in classes on a containing div, and display only the controls that are
+valid for the user's given roles:
+
+... In the view:
+<div class="sysadmin ber_member">                                                                                         <!-- complete list of user's roles.
+ there's a view helper:
+                                                                   <div class="<%= roles_css(session.user) %>">... -->
+  <div id="delete_everything_tab" class="control">...</div>   <!-- only for admins -->
+  <div id="contribute_tab"        class="control">...</div>   <!-- only for members -->
+  <div id="browse_tab"            class="control">...</div>   <!-- for guests and others -->
+</div>
+
+... In the css:
+.control                           { display: none; }                           /* default to controls invisible */
+.sysadmin   #delete_everything_tab { display: block; }      /* visible to sysadmins */
+.ber_member #contribute_tab        { display: block; }      /* visible to ber_members */
+.guest      #browse_tab            { display: block; }      /* visible to guests */
+
+The advantage to this is that it's completely declarative, easy to maintain, and keeps logic out of your views.  The downside
+is that users can see your application's security structure in the html source.  (But you did declare authorization filters
+on the controller to actually keep them out, right?...)
+
+
 Q. Does Repertoire core have routing extensions, or only controller filters for authorization?
 
 A. For now, only controller filters.

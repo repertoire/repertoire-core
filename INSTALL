@@ -21,11 +21,12 @@ Merb::Router.prepare do
                                                         # see the merb slices documentation for info on name_prefix and path_prefix
 end
 
-# add the Repertoire user mixin to the default merb user (app/models/user.rb).  then comment out or delete the
+# add the Repertoire user mixins to the default merb user (app/models/user.rb).  then comment out or delete the
 # 'login' property, since Repertoire uses email logins.  Your entire user model might look like this:
 class User
   include DataMapper::Resource
-  include RepertoireCore::Mixins::User
+  include RepertoireCore::Mixins::UserRegistration
+  include RepertoireCore::Mixins::UserAuthorization
   property :id, Serial
 # property :login, String    <<< n.b. commented out
 end

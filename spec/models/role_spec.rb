@@ -120,6 +120,14 @@ describe Role do
       @suzy.has_role?(:admin).should  be_false
       @suzy.has_role?(:member).should be_true
     end
+    
+    it "should provide complete lists of all a user's roles" do
+      @nick.expanded_roles.size.should == 4
+      (@nick.expanded_roles - [ Role[:admin], Role[:manager], Role[:member], Role[:guest] ]).should be_empty
+      
+      @suzy.expanded_roles.size.should == 2
+      (@suzy.expanded_roles - [ Role[:member], Role[:guest] ]).should be_empty
+    end
       
   end
     

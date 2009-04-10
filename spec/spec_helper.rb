@@ -32,11 +32,13 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 #DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
 
 require 'merb-auth-more/mixins/salted_user'
-require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_mixin")
+require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_registration_mixin")
+require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_authorization_mixin")
 class User
   include DataMapper::Resource
   include Merb::Authentication::Mixins::SaltedUser
-  include RepertoireCore::Mixins::User
+  include RepertoireCore::Mixins::UserRegistration
+  include RepertoireCore::Mixins::UserAuthorization
   property :id, Serial
 end
 

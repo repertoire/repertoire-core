@@ -2,7 +2,7 @@ module RepertoireCore
   
   module Mixins
   
-    module Authorization  
+    module ControllerAuthorization  
       protected
       # This is the main method to use as a before filter.  You call it with a list of
       # role names, which are checked in order.  If the currently authenticated user

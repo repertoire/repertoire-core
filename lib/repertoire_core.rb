@@ -6,8 +6,9 @@ if defined?(Merb::Plugins)
   
   require 'repertoire_core/exceptions'
   require 'repertoire_core/whois_helper'
-  require 'repertoire_core/mixins/authorization_mixin'
-  require 'repertoire_core/mixins/user_mixin'
+  require 'repertoire_core/mixins/controller_authorization_mixin'
+  require 'repertoire_core/mixins/user_registration_mixin'
+  require 'repertoire_core/mixins/user_authorization_mixin'
   require 'repertoire_core/mixins/dm/resource_mixin'
   require 'repertoire_core/smtp_tls'
   
@@ -29,7 +30,7 @@ if defined?(Merb::Plugins)
   Merb::Slices::config[:repertoire_core][:lookup_helpers] ||= [ RepertoireCore::WhoisHelper.new ]
   
   # extend controllers to allow authorization checks
-  Merb::Controller.send(:include, RepertoireCore::Mixins::Authorization)
+  Merb::Controller.send(:include, RepertoireCore::Mixins::ControllerAuthorization)
   
   # All Slice code is expected to be namespaced inside a module
   module RepertoireCore
