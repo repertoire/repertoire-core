@@ -10,11 +10,16 @@ Potential features:
 
 Outstanding items:
 
-- specs for granting/subscribing
-- specs for webservice methods
+- specs for authorization filter in controller
+- specs for institutional filter in controller
+
+- rake tasks for sub-application to install its own roles
+- README	
+
+- specs for granting/subscribing  DONE
+- specs for webservice methods  DONE
 - default css  DONE
 - check forbidden page
-- rake tasks for sub-application to install its own roles
 - update to accommodate slice_prefix  DONE
-- README	
+
 

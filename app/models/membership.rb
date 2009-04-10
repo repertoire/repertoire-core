@@ -2,47 +2,69 @@ class Membership
   include DataMapper::Resource
 
   property :id,                         Integer, :serial   => true
-  property :user_note,                  Text
   
+  # user's subscription request
+  belongs_to :user
+  belongs_to :role
+  property   :user_note,                Text
+
+  # reviewer's decision
+  belongs_to :reviewer, :class_name => 'User', :child_key => [:reviewer_id]
+  property :reviewer_note,              Text  
   property :approved_at,                DateTime
-  property :reviewer_id,                Integer
-  property :reviewer_note,              Text
   
+  # administrative data
   property :created_at,                 DateTime
   property :updated_at,                 DateTime
   
-  belongs_to :user
-  belongs_to :role
-  belongs_to :reviewer, :class_name => 'User', :child_key => [:reviewer_id]
-  
-  #
-  # Membership subscription review process
-  #
-  
-  def review(user, approve, message = nil)
-    is_bootstrapping = Membership.count == 1
-    is_grantable     = user.grantable_roles.any? { |grantable| grantable.implies?(role) }
-    raise "#{user.full_name} cannot grant #{role.name}" unless is_grantable || is_bootstrapping
-    
-    self.approved_at = approve ? Time.now.utc : nil
-    self.reviewer = user
-    self.reviewer_note = message
-    save
-    self
+  # for cases where membership is open, approve automatically
+  before :save do
+    self.attempt_review(user, true) unless reviewed?
   end
   
+  #
+  # Membership status
+  #
+  
   def reviewed?
-    reviewer != nil
+    !reviewer.nil? || !approved_at.nil?
   end
   
   def approved?
-    approved_at != nil
+    !approved_at.nil?
   end
   
   def rejected?
     reviewed? && !approved?
   end
-  
+
+  #
+  # Membership subscription review process
+  #
+
+  # Attempt to review the membership, raising an exception if review is not permitted
+  def review(reviewer, approve, message=nil)
+    unless attempt_review(reviewer, approve, message).reviewed?
+      raise RepertoireCore::Unauthorized, "Insufficient permissions to review this membership request"
+    end
+    self
+  end
+
+  # Attempt to review the membership, either approving or denying
+  #
+  # Returns the updated membership - use membership.attempt_review(user, true).reviewed? to check success
+  def attempt_review(reviewer, approve, message = nil)
+    if role.open_membership? || reviewer.can_grant?(role)
+      self.approved_at   = approve ? Time.now.utc : nil
+      self.reviewer      = reviewer
+      self.reviewer_note = message
+      self.save
+      self.reload
+    else
+      self
+    end
+  end
+
   #
   # Utility functions
   #

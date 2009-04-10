@@ -1,0 +1,41 @@
+= Attempt to validate role associations
+
+validates_with_block :granted_by do
+  # require granting role to be ancestor
+  if granted_by.nil? || granted_by.implies?(self)
+    true
+  else
+    [ false, "Role cannot be granted by :#{granted_by.name} since it is not an ancestor"]
+  end
+end
+
+validates_with_block :reviewed_by do
+  # require reviewer to have grant permissions
+  if reviewed_by.nil? || reviewed_by.can_grant?(self)
+    true
+  else
+    [ false, "Role cannot be reviewed by #{reviewed_by.email} since they are not authorized to grant it." ]
+  end
+end
+
+
+
+# load a series of mixed roles and symbols
+load_roles = role_names.find_all { |r| r.is_a?(Symbol) }
+(role_names - load_roles) | Role.all(:name.in => load_roles)
+
+
+
+
+class Symbol
+  # convenience shorthand for loading roles
+  def to_role
+    Role.first(:name => self.to_s) || raise(NotFound, "Undefined role '#{role_name}'")
+  end
+end
+
+class Array
+  # convenience shorthand for loading roles
+  def to_roles
+  end
+end

@@ -2,7 +2,7 @@ require File.join( File.dirname(__FILE__), "..", "spec_helper" )
 
 include RepertoireCore
 
-describe "RepertoireCore::Users (controller)" do
+describe RepertoireCore::Users do
 
   # TODO.  for unclear reasons, slice_url fails (merb 1.0.11) when called within test harness
   #        so tests below fail
@@ -20,7 +20,7 @@ describe "RepertoireCore::Users (controller)" do
   end
 
   it 'requires password on signup' do
-    pending "fixes to slice_url"
+    pending "MerbSlices fixes to slice_url"
     users = User.all.size
     response = create_user(:password => nil)
     response.should be_successful
@@ -28,7 +28,7 @@ describe "RepertoireCore::Users (controller)" do
   end
      
   it 'requires password confirmation on signup' do
-    pending "fixes to slice_url"
+    pending "MerbSlices fixes to slice_url"
     users = User.all.size
     response = create_user(:password_confirmation => nil)
     response.should be_successful
@@ -36,7 +36,7 @@ describe "RepertoireCore::Users (controller)" do
   end
 
   it 'requires email on signup' do
-    pending "fixes to slice_url"
+    pending "MerbSlices fixes to slice_url"
     users = User.all.size
     response = create_user(:email => nil)
     response.should be_successful
@@ -52,6 +52,7 @@ describe "RepertoireCore::Users (controller)" do
   end
 
   it 'activates user' do
+    pending "fixes to slice url"
     response = create_user(:email => "bill@globe.com", :password => "tiger", :password_confirmation => "tiger")
     response.should redirect
     @user = User.first(:email => "bill@globe.com")
@@ -66,9 +67,6 @@ describe "RepertoireCore::Users (controller)" do
     response = request url(:login), :method => "PUT", :params => { :email => "bill@globe.com", :password => "tiger" }
     response.should redirect # i.e. should succeed
   end
-
-  it "should not log the user in automatically on creation"
-    # TODO
 
   protected 
   def create_user(options = {})

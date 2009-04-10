@@ -34,6 +34,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb-param-protection', '>= 1.0.11')
   s.add_dependency('merb-slices',    '>= 1.0.11')
   s.add_dependency('dm-core',        '>= 0.9.11')
+  s.add_dependency('dm-constraints', '>= 0.9.11')
   s.add_dependency('dm-validations', '>= 0.9.11')
   s.add_dependency('dm-timestamps',  '>= 0.9.11')
   s.add_dependency('dm-aggregates',  '>= 0.9.11')

@@ -2,7 +2,7 @@ require File.join( File.dirname(__FILE__), "..", "spec_helper" )
 
 include RepertoireCore
 
-describe "Repertoire users" do
+describe User do
   
   WHOIS_MOCK_RESULT = <<-RESULT
         OrgName:    Massachusetts Institute of Technology 
@@ -15,7 +15,7 @@ describe "Repertoire users" do
   end
   
   before(:each) do
-    User.all.destroy!
+    User.auto_migrate!
     @hash = valid_user_hash
     @user = User.new(@hash)
     
@@ -123,12 +123,12 @@ describe "Repertoire users" do
     it "allow login after the forgotten password key is cleared" do
       @user.forgot_password!
       @user.clear_forgotten_password!
-      @user.forgotten_password?.should == false
+      @user.forgotten_password?.should be_false
     end
   
     it "can be cleared by authenticating with the old password" do
       User.authenticate(@hash[:email], @hash[:password]).should == @user
-      @user.forgotten_password?.should == false
+      @user.forgotten_password?.should be_false
     end
   
   end

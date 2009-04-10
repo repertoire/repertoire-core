@@ -29,6 +29,7 @@ end
 
 # Set up in-memory database for integration tests
 DataMapper.setup(:default, 'sqlite3::memory:')
+#DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
 
 require 'merb-auth-more/mixins/salted_user'
 require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_mixin")
@@ -97,10 +98,6 @@ Spec::Runner.configure do |config|
   config.include(Merb::Test::ControllerHelper)
   config.include(Merb::Test::SliceHelper)
   config.include(ValidModelHashes)
-  
-  config.before(:all) do
-    DataMapper.auto_migrate! if Merb.orm == :datamapper
-  end
   
   config.before(:each) do
     if standalone?
