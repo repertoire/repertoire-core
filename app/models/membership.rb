@@ -45,7 +45,7 @@ class Membership
   # Attempt to review the membership, raising an exception if review is not permitted
   def review(reviewer, approve, message=nil)
     unless attempt_review(reviewer, approve, message).reviewed?
-      raise RepertoireCore::Unauthorized, "Insufficient permissions to review this membership request"
+      raise RepertoireCore::Forbidden, "Insufficient permissions to review this membership request"
     end
     self
   end

@@ -32,7 +32,7 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 #DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
 
 require 'merb-auth-more/mixins/salted_user'
-require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_registration_mixin")
+require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_properties_mixin")
 require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repertoire_core", "mixins", "user_authorization_mixin")
 class User
   include DataMapper::Resource
@@ -101,7 +101,7 @@ Spec::Runner.configure do |config|
   config.include(Merb::Test::SliceHelper)
   config.include(ValidModelHashes)
   
-  config.before(:each) do
+  config.before(:all) do
     if standalone?
       Merb::Router.prepare do
        slice(:merb_auth_slice_password, :name_prefix => nil, :path_prefix => "")

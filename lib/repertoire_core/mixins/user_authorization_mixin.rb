@@ -38,10 +38,13 @@ module RepertoireCore
         #        For an example, see ensure_institution
         #
 
-        # Check whether user has any of the supplied roles.
+        # Check whether user has any of the supplied roles,
+        # either directly or by implication.
+        #
+        # @returns the first matching role, or nil
         def has_role?(*role_names)
           match_roles = Role.to_roles(*role_names)
-          roles.any? { |r| r.implies?(*match_roles) }
+          self.roles.any? { |r| r.implies?(*match_roles) }
         end
 
         # Check whether user is affiliated with any of the supplied insitutitons (by code).

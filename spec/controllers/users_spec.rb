@@ -51,7 +51,7 @@ describe RepertoireCore::Users do
   end
 
   it 'activates user' do
-    pending "fixes to slice url"
+    pending "MerbSlices fixes to slice_url"
     response = create_user(:email => "bill@globe.com", :password => "tiger", :password_confirmation => "tiger")
     response.should redirect
     @user = User.first(:email => "bill@globe.com")

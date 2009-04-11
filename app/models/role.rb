@@ -127,13 +127,17 @@ class Role
       Role.all(:lft.in => spans)
     end
     
-    # Loads a set of roles from their symbol equivalents
+    # Loads a set of roles from a mix of symbols and role objects
+    #
+    # @throws RuntimeException if a role name does not exist
     #
     # @returns the role objects
-    def to_roles(*role_names)
+    def to_roles(*roles)
       # load a series of mixed roles and symbols
-      load_roles = role_names.find_all { |r| r.is_a?(Symbol) }
-      result = (role_names - load_roles) | Role.all(:name.in => load_roles)
+      role_names = roles.find_all { |r| r.is_a?(Symbol) }
+      load_roles = Role.all(:name.in => role_names)
+      raise "Unable to locate all roles in [#{ role_names.join(' ')}]" unless load_roles.size == role_names.size
+      (roles - role_names) | load_roles
     end
   end
   

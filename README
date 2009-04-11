@@ -8,4 +8,7 @@
 - controller filters for authorization
 
 
-- first membership ever is free
+(1) User registration, forgotten password, basic profile page, password change
+(2) Authorization, using hierarchical user roles
+(3) Role management: granting, subscribing, and reviewing
+(4) Ajax utilities

@@ -6,6 +6,8 @@ Potential features:
 - user interface for RBAC management
 - multiple user emails (= institutional affiliations) for a user, like in facebook
 - allow users to re-register to an email if unactivated?
+- cascading authorization schemes (like merb-auth's strategies?)
+
 - param protection for passwords in log [ merb-param-protection working?? ]
 
 Outstanding items:

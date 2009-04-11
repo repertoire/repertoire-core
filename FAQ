@@ -107,9 +107,16 @@ A. Repertoire core delegates authentication to the merb-auth-slice-password plug
 
 Q. How do I require authorization for a given page?
 
-A. Use a before controller filter that checks whether session.user has one of the necessary roles
+A. (1) Call require_role at the beginning of your action:
+       def delete_em_all
+         require_role(:foo_role)
+         ...
+       end
+   (2) Use a before filter to protect all actions in a controller:
+       before :ensure_authorized, :with => [:system_administrator, :message => 'You need sysadmin role to remove the hard drive']
 
-before :ensure_authorized, :with => [:system_administrator, :message => 'You need sysadmin role to remove the hard drive']
+   If you provide a list of roles, any match will allow access.  You can also pass :message => 'foo' to require_role (in fact,
+   require_role and ensure_authorized are aliases)
 
 
 Q. Sure, that provides access control over actions, but what's the best way to avoid presenting users with the unavailable
@@ -145,18 +152,29 @@ is that users can see your application's security structure in the html source. 
 on the controller to actually keep them out, right?...)
 
 
-Q. Does Repertoire core have routing extensions, or only controller filters for authorization?
+Q. Does Repertoire core have routing extensions, only in-controller methods for doing authorization?
 
-A. For now, only controller filters.
+A. For now, only controller filters.  In general one wants to provide different levels access to methods on the same controller (e.g.
+   guests can browse posts, but only members can add, and managers delete).  Given this, your best bet might be a single filter
+   for base authentication (guest), and then to stick to require_role inside actions.
 
 
-Q. How do I make a role closed to subscription or granting other than what I do at the command line.  Conversely, 
+Q. How do I make a role closed to subscription or granting (other than what I do by fiat in the console)? Conversely,
 how do I make a role that can be joined without a review process.
 
 A.                     granted_by not set | granted_by is set
                      ---------------------|----------------------------
    not subscribable  | closed membership  | can only be granted
-       subscribable  | open membership    | can be granted & subscribed
+       subscribable  | open membership    | can be subscribed & granted (pending review)
+
+   Or, here is a bit of RBAC haiku:
+
+   Role.declare do
+     Role[:admin].                         # closed membership              
+       grants(:manager).                   # can be granted
+       grants(:member).open.               # can be subcribed & granted (pending review)
+       implies(:guest).open                # open membership
+   end
 
 
 Q. Is there only a single namespace for roles, across all projects?
@@ -188,6 +206,13 @@ Q. I can't get Merb's login page to work, even though the registration and activ
 
 A. Make sure merb-auth is configured to use User.email to identify users (in merb/merb-auth/setup.rb)
 
+
+Q. Merb is ignoring my authorization filters, and passing requests through without checks!
+
+A. After a revision in 10/2008, Merb now only allows a single filter declaration per method
+
+     before :ensure_authorized, :with => [ :itm_manager, {:message => 'Manager right necessary to delete ' }]
+     before :ensure_authorized, :with => [ :itm_member,  {:message => 'Please sign up to browse materials' }]
 
 Q. I get a SMTP socket error when I test the registration pages on my workstation.
 

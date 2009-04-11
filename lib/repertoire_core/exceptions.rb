@@ -1,5 +1,5 @@
 module RepertoireCore
   
-  class Unauthorized < Exception; end
+  class Forbidden < Merb::ControllerExceptions::Forbidden; end
   
 end

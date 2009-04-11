@@ -159,7 +159,7 @@ class RepertoireCore::Users < RepertoireCore::Application
     @user = session.user
     
     # make sure user changing password knows existing one or logged in via a reset key
-    raise Merb::ControllerExceptions::Unauthorized unless @user.password_reset_key || User.authenticate(@user.email, current_password)
+    raise Merb::ControllerExceptions::Forbidden unless @user.password_reset_key || User.authenticate(@user.email, current_password)
 
     @user.password              = user[:password]
     @user.password_confirmation = user[:password_confirmation]
