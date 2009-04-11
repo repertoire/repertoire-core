@@ -1,6 +1,6 @@
 module RepertoireCore
   module Mixins
-    module UserRegistration
+    module UserProperties
       
       def self.included(base)
         base.class_eval do
@@ -31,8 +31,8 @@ module RepertoireCore
           before :save,   :encrypt_password
           before :create, :make_activation_code          
 
-          include RepertoireCore::Mixins::UserRegistration::InstanceMethods
-          extend  RepertoireCore::Mixins::UserRegistration::ClassMethods
+          include RepertoireCore::Mixins::UserProperties::InstanceMethods
+          extend  RepertoireCore::Mixins::UserProperties::ClassMethods
         end
       end
       
