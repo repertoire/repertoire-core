@@ -37,8 +37,8 @@ describe RepertoireCore::Mixins::AuthorizationHelper do
       # router
       Merb::Router.reset!
       Merb::Router.prepare do
-        slice(:merb_auth_slice_password, :name_prefix => nil, :path_prefix => "")
-        slice(:repertoire_core,          :name_prefix => nil, :path_prefix => "")
+        slice(:merb_auth_slice_password, :path_prefix => '', :name_prefix => nil)
+        slice(:repertoire_core, :path_prefix => '', :name_prefix => nil)
         
         authenticate do
           # old-style routes since I can't get webrat to send the right HTTP verb to REST resources

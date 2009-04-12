@@ -1,0 +1,3 @@
+Views for Hyperstudio Core HTML pages.  All content is wrapped in an enclosing div with the class 'core',
+and css for each component and page scoped by it.  Client projects should follow the same practice using
+their own abbreviation, to avoid CSS namespace conflicts.

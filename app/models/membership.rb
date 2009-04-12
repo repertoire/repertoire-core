@@ -38,6 +38,14 @@ class Membership
     reviewed? && !approved?
   end
 
+  def status
+    case
+    when approved? then :approved
+    when rejected? then :rejected
+    else :pending
+    end
+  end
+
   #
   # Membership subscription review process
   #

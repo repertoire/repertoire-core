@@ -1,8 +1,10 @@
-/* default css for repertoire core pages */
+/* this file contains default css for the repertoire core admin pages.  
+   modify it with over-rides in your project, or don't include it at all
+   
+   subsidiary pages include their own vital css styling and assets */
 
 .core .clear              { clear: both; }
 .core #banner             { float: right; margin-bottom: 10px; }
-
 .core label               { float: left; clear: both; margin-top: 5px; }
 .core input               { float: left; clear: left; }
 .core textarea            { float: left; clear: both;}

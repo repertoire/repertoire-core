@@ -101,6 +101,20 @@ A. The login page uses the application layout unless specified otherwise.  You c
 directory if necessary.
 
 
+Q. Is there a quick way to reset a user's password?
+
+A. Easiest way is to have them use the password reset by email feature.  BUT, in a pinch you can use the model API to modify accounts:
+
+		# merb -i
+		>> u = User.first(:email => 'user@company.com')
+		>> u.password = u.password_confirmation = 'NEWPASSWORD'
+		>> u.save!
+		
+There's absolutely no way to see a user's current password, since both it and the salt are md5 encrypted.  However, you can do all
+basic user admin from the command line, including creating accounts, activating them, resetting passwords, and granting roles.  See the
+User model API for details.
+
+
 Q. How do I require login for a given page?
 
 A. Repertoire core delegates authentication to the merb-auth-slice-password plugin.  The README in its source will give detailed information.  But in general, in routes.rb:
@@ -138,8 +152,7 @@ the task to css.  List all of the user's role names in classes on a containing d
 valid for the user's given roles:
 
 ... In the view:
-<div class="sysadmin ber_member">                                                                                         <!-- complete list of user's roles.
- there's a view helper:
+<div class="sysadmin ber_member">                             <!-- complete list of user's roles. there's a view helper:
                                                                    <div class="<%= roles_css(session.user) %>">... -->
   <div id="delete_everything_tab" class="control">...</div>   <!-- only for admins -->
   <div id="contribute_tab"        class="control">...</div>   <!-- only for members -->
@@ -147,7 +160,7 @@ valid for the user's given roles:
 </div>
 
 ... In the css:
-.control                           { display: none; }                           /* default to controls invisible */
+.control                           { display: none; }       /* default to controls invisible */
 .sysadmin   #delete_everything_tab { display: block; }      /* visible to sysadmins */
 .ber_member #contribute_tab        { display: block; }      /* visible to ber_members */
 .guest      #browse_tab            { display: block; }      /* visible to guests */
@@ -182,6 +195,20 @@ A.                     granted_by not set | granted_by is set
    end
 
 
+
+Q. I want all of my project managers to be able to grant the member role, but when someone subscribes to it only one or two designated
+reviewers should be emailed.
+
+A. One way to do it:
+
+   Role.declare do
+     Role[:proj_reviewer].                  # role especially for reviewing membership requests
+       grants(:proj_member).open
+     Role[:proj_manager].                   # separate manager role
+       implies(:proj_member)
+   end
+
+
 Q. Is there only a single namespace for roles, across all projects?
 
 A. Yes.  Early versions of the data model included a "project context" field that identified each role's project.  But it quickly became
@@ -191,18 +218,13 @@ does "editor" in project "aop" mean the same thing as "editor" in project "ter"?
 The conclusion was to use a single namespace for roles, and encourage projects to use prefixes: :ber_editor, cfrp_contributor, etc.
 
 
-Q. Is there a quick way to reset a user's password?
+Q. Is Repertoire RBAC "true" role-based access control?
 
-A. Easiest way is to have them use the password reset by email feature.  BUT, in a pinch you can use the model API to modify accounts:
-
-		# merb -i
-		>> u = User.first(:email => 'user@company.com')
-		>> u.password = u.password_confirmation = 'NEWPASSWORD'
-		>> u.save!
-		
-There's absolutely no way to see a user's current password, since both it and the salt are md5 encrypted.  However, you can do all
-basic user admin from the command line, including creating accounts, activating them, resetting passwords, and granting roles.  See the
-User model API for details.
+A. No.  (1) RBAC as defined by NIST also includes a notion of individual "permissions" that are reconfigured into roles as institutional
+organization changes.  That's a level of abstraction we don't need: each project can be relatively sure of the roles it expects its users
+to fulfil, so we just check roles directly.  (2) Repertoire arranges roles into a hierarchy, which isn't necessarily a requirement of
+NIST RBAC.  (3) Repertoire roles only grant access, they never deny it.  This avoids logical conundrums and the need for hueristics.
+(4) Traditional RBAC has no notion of subscribing or requesting a role that one doesn't have.
 
 
 =Common Problems=

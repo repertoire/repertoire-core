@@ -16,8 +16,8 @@ Merb::Router.prepare do
     ... your application routes that require login
   end
 
-  slice(:merb_auth_slice_password, :name_prefix => nil, :path_prefix => "")  # i.e. user login/logout
-  slice(:repertoire_core, :name_prefix => nil, :path_prefix => "")           # i.e. user registration/activation/profile/password mgmt
+  slice(:merb_auth_slice_password, :name_prefix => nil, :path_prefix => "") # i.e. user login/logout
+  slice(:repertoire_core, :name_prefix => nil, :path_prefix => "")          # i.e. user registration/activation/profile/password mgmt
                                                         # see the merb slices documentation for info on name_prefix and path_prefix
 end
 

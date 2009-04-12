@@ -1,5 +1,5 @@
 module RepertoireCore
-  module User
+  module UserMixin
     def self.included(base)
       base.class_eval do
         include RepertoireCore::Mixins::UserProperties

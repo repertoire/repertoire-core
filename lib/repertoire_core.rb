@@ -9,9 +9,9 @@ if defined?(Merb::Plugins)
   require 'repertoire_core/mixins/authorization_helper'
   require 'repertoire_core/mixins/user_properties_mixin'
   require 'repertoire_core/mixins/user_authorization_mixin'
+  require 'repertoire_core/mixins/user_mixin'
   require 'repertoire_core/mixins/dm/resource_mixin'
   require 'repertoire_core/smtp_tls'
-  require 'repertoire_core/user'
   
   dependency 'merb-slices', :immediate => true
   Merb::Plugins.add_rakefiles "repertoire_core/merbtasks", "repertoire_core/slicetasks", "repertoire_core/spectasks"
@@ -97,8 +97,11 @@ if defined?(Merb::Plugins)
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
       
-      # user profile updates
-      scope.resources :users, :name_prefix => ''
+      # user profile updates 
+      # TODO. authenticate
+      scope.resources :users do |user|
+        user.resources :memberships
+      end
 
       # user registration and passwords      
       scope.to(:controller => "users") do |c|

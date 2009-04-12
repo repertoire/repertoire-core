@@ -1,0 +1,3 @@
+This directory contains CSS files used by Hyperstudio components.
+To provide a clean upgrade path, do not modify them directly.
+Instead, override the css classes in your project's css files.

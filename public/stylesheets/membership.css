@@ -1,0 +1,8 @@
+/* default css for the Repertoire membership pages */
+
+.core #memberships .user_note     { width: 30%; }
+.core #memberships .reviewer_note { width: 30%; }
+
+#memberships .rejected td  { color: red; }
+#memberships .pending  td  { color: orange; }
+#memberships .approved td  { color: #3D3D3D; }

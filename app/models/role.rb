@@ -43,6 +43,23 @@ class Role
     Role.to_roles(*others).any? { |r| (lft..rgt).include?(r.lft) }
   end
   
+  #
+  # Convenience methods
+  #
+  
+  # Provides a rough numeric approximation of the role's importance
+  # vis-a-vis all other declared roles, for sorting lists of roles.
+  #
+  # Current implementation guarantees (1) related roles will be grouped
+  # together; (2) within each group, roles with more permissions will
+  # appear first.  
+  #
+  # This does *not* mean, however, that a role necessarily has lower
+  # permissions because it appears later in the list; it might just be in
+  # a different group of roles.
+  def sort_order
+    lft
+  end
   
   #
   # Class methods
