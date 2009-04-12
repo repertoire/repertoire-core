@@ -37,7 +37,7 @@ require File.join(File.expand_path(File.dirname(__FILE__)), "..", "lib", "repert
 class User
   include DataMapper::Resource
   include Merb::Authentication::Mixins::SaltedUser
-  include RepertoireCore::Mixins::UserRegistration
+  include RepertoireCore::Mixins::UserProperties
   include RepertoireCore::Mixins::UserAuthorization
   property :id, Serial
 end
