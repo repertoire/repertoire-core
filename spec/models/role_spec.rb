@@ -99,6 +99,10 @@ describe Role do
       Role.grant!(:admin, @nick)
       Role.grant!(:member, @suzy)
     end
+    
+    it "should complain when accessing a non-existent role outside a declaration" do
+      lambda { Role[:foobar] }.should raise_error
+    end
   
     it "should allow users to easily check if they match a certain role" do
       @nick.has_role?(:admin).should be_true

@@ -87,7 +87,7 @@ class Role
         @declarator.state = role
         @declarator
       else
-        Role.first(:name => name) || raise(NotFound, "Unkown role :#{name}")
+        Role.first(:name => name) || raise("Unkown role :#{name}")
       end
     end
     
