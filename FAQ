@@ -77,6 +77,11 @@ Repertoire Core comes with controller stubs set up for exactly this.  Install th
 and modify the controller mixins in the 'slices/repertoire_core' directory.
 
 
+Q. How do I show feedback from the Repertoire Core registration/activation/etc. pages on my own?
+
+A. Look in message[:notice] and message[:error]
+
+
 Q. The default registration/profile/password pages are plain and ugly.  How do I reconfigure them?
 
 A. Override the default CSS in your project's stylesheets.  First set the layout to your own project-specific design.  Then define a new containing id to surround the entire page contents.  Define CSS styles relative to it.  These styles will always override the ones

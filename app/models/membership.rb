@@ -2,7 +2,7 @@ class Membership
   include DataMapper::Resource
 
   property :id,                         Integer, :serial   => true
-  
+
   # user's subscription request
   belongs_to :user
   belongs_to :role
@@ -63,15 +63,6 @@ class Membership
     else
       self
     end
-  end
-
-  #
-  # Utility functions
-  #
-
-  # membership sorting: by creation date
-  def <=>(other)
-    created_at <=> other.created_at
   end
   
 end

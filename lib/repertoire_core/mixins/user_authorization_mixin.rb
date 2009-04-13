@@ -47,9 +47,9 @@ module RepertoireCore
           self.roles.any? { |r| r.implies?(*match_roles) }
         end
 
-        # Check whether user is affiliated with any of the supplied insitutitons (by code).
-        def has_institution?(*insitution_codes)
-          insitution_codes.include?(self.institution_code)
+        # Check whether user is affiliated with any of the supplied institutions (by code).
+        def has_institution?(*institution_codes)
+          institution_codes.include?(self.institution_code)
         end
       
         #
