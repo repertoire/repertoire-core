@@ -2,6 +2,10 @@
 
 .core .clear              { clear: both; }
 .core #banner             { float: right; margin-bottom: 10px; }
+
 .core label               { float: left; clear: both; margin-top: 5px; }
 .core input               { float: left; clear: left; }
+.core textarea            { float: left; clear: both;}
+.core .institution,
+.core .byline             { float: left; clear: both; color: gray; }
 .core #submit             { margin-top: 8px; }

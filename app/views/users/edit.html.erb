@@ -23,7 +23,7 @@
   <% end %>
 <%= form_for @user, :action => resource(@user), :method => :put do %>
   <div id="user-image"><a href="http://en.gravatar.com/" title="Click to change your image" target="_blank"><img src="<%= gravatar_image_url(@user.email) %>"/></a></div>
-  <div><div id="email"><%= @user.email %></div><div id="institution"><%= @user.institution %></div></div>
+  <div><div id="email"><%= @user.email %></div><div class="institution"><%= @user.institution %></div></div>
   <%= error_messages_for @user if @user.errors %>
   <div><label for="first_name">First</label><%= text_field :first_name %><div class='validate'></div></div>
   <div><label for="last_name">Last</label><%= text_field :last_name %><div class='validate'></div></div>
