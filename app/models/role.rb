@@ -156,6 +156,15 @@ class Role
       raise "Unable to locate all roles in [#{ role_names.join(' ')}]" unless load_roles.size == role_names.size
       (roles - role_names) | load_roles
     end
+    
+    
+    # Returns a list of the entry-level roles: subscribable roles without children
+    #
+    # These roles represent entry points for user to membership in other projects
+    #
+    def entry_roles
+      Role.leaves.all(:subscribable => true)
+    end
   end
   
   

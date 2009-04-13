@@ -25,6 +25,8 @@ load_roles = role_names.find_all { |r| r.is_a?(Symbol) }
 (role_names - load_roles) | Role.all(:name.in => load_roles)
 
 
+<%= radio_group :my_choice, [{:value => 0, :label => "Approve"}, {:value => 1, :label => 'Deny'}] %>
+
 
 
 class Symbol

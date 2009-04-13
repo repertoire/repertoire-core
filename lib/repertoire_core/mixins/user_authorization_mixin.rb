@@ -21,7 +21,7 @@ module RepertoireCore
       
         # @returns the set of roles under membership review for this user
         def roles_pending_review
-          memberships.all(:reviewed_by => nil, :order => [:created_at]).role
+          memberships.all(:reviewer_id => nil, :order => [:created_at]).role
         end  
 
          # Roles this user has, either directly or by inference        
@@ -73,7 +73,7 @@ module RepertoireCore
           relevant_requests = active_requests - rejected_requests
 
           if relevant_requests.empty?
-            Membership.create(:user => self, :role => role)
+            Membership.create(:user => self, :role => role, :user_note => message)
           else
             relevant_requests.first
           end
@@ -100,18 +100,23 @@ module RepertoireCore
         def review(membership, approve, message=nil)
           membership.review(self, approve, message)
         end
+        
+        # Returns pending membership requests this user is authorized to review, ordered by application date
+        #
+        # N.B. expensive operation: use sparingly
+        def requests_to_review
+          roles = Role.to_roles(*self.implied_grantable_roles)
+          role_ids = roles.map { |r| r.id }            # DM TODO.  why not role.memberships?
+          Membership.all(:role_id.in => role_ids, :reviewer_id => nil, :order => [:created_at])
+        end
 
         # Returns true if user has permissions to grant all the given roles, whether directly or
         # through a role implied by one the user holds directly
         #
         # N.B. expensive operation: use sparingly
         def can_grant?(*role_names)
-          implied_roles           = Role.self_and_descendants(*self.roles)
-          implied_role_ids        = implied_roles.map { |r| r.id }
-          implied_grantable_roles = Role.all(:granted_by_role_id.in => implied_role_ids)
-        
           roles_to_check = Role.to_roles(*role_names)
-          (roles_to_check - implied_grantable_roles).empty?
+          (roles_to_check - self.implied_grantable_roles).empty?
         end
       
         # 
@@ -128,12 +133,12 @@ module RepertoireCore
         #   - roles the user already has or is under review for are removed
         #
         def subscribable_roles
-          user_parent_role_ids = roles.map { |r| r.parent.id }
+          user_parent_role_ids = self.roles.map { |r| r.parent.id }
   
-          open_roles     = Role.leaves.all(:granted_by => nil)
-          stepwise_roles = Role.all(:id.in => user_parent_role_ids)
+          entry_roles     = Role.entry_roles
+          stepwise_roles  = Role.all(:id.in => user_parent_role_ids)    # DM TODO.  why not self.parents ?
         
-          (open_roles | stepwise_roles) - (self.roles | self.roles_pending_review)
+          (entry_roles | stepwise_roles) - (self.roles | self.roles_pending_review)
         end
       
 
@@ -141,9 +146,19 @@ module RepertoireCore
         #
         # Note: will not include roles this user can grant by implication
         def grantable_roles
-          role_ids = roles.map { |r| r.id }
-          Role.all(:granted_by_role_id.in => role_ids)
+          role_ids = self.roles.map { |r| r.id }
+          Role.all(:granted_by_role_id.in => role_ids)    # DM TODO.  why not self.roles.grants  ?
         end      
+        
+        
+        # Returns the list of all roles grantable by this user, whether directly or by implication
+        #
+        # N.B. expensive operation; use sparingly
+        def implied_grantable_roles
+          implied_roles           = Role.self_and_descendants(*self.roles)
+          implied_role_ids        = implied_roles.map { |r| r.id }
+          implied_grantable_roles = Role.all(:granted_by_role_id.in => implied_role_ids)    # DM TODO.  why not implied_roles.grants ?
+        end
       
         #
         # Utility functions

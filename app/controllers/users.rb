@@ -1,6 +1,18 @@
 class RepertoireCore::Users < RepertoireCore::Application
     
-    before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
+    #before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
+
+    #
+    # pending role membership review
+    #
+    
+    # TODO.  move this into separate controller, REST-style?
+    def requests(user_id)
+      @user                    = User.get(user_id)
+      @memberships             = @user.requests_to_review
+      
+      display @memberships
+    end
 
     #
     # Profile page.

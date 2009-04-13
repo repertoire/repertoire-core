@@ -1,57 +1,10 @@
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.js" %>
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.tablesorter.patched.js" %>
-
-<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership.css" %>
-<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/lib/jquery.tablesorter.blue/style.css" %>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $("#memberships").tablesorter({
-      sortList: [[0,0]],                               // start sorted by role
-      headers: { 0: { sorter: 'numeric' },             // roles sorted by relative permissions
-                 1: { sorter: 'text' },                // sortval outputs lexically ordered date format
-                 3: { sorter: 'text' },
-                 2: { sorter: false },                 // disable sorting on notes
-                 4: { sorter: false } },
-      debug: true,
-      textExtraction: function(node) { 
-        var val = $(node).attr('sortval');
-        if (undefined == val)
-          val = $(node).text();
-        return val;
-      }
-    });
-  });
-</script>
-
 <div class="core">
-<h3><%= @user.full_name %> membership history</h3>
-<table id="memberships" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
-<thead>
-<tr>
-<th class="role">Role</th>
-<th class="created_at">Requested</th>
-<th class="user_note">User note</th>
-<th class="status">Status</th>
-<th class="reviewer_note">Reviewer note</th>
-</tr>
-</thead>
-<tbody>
-<% @memberships.each do |m| %>
-<tr class="membership <%= m.status %>">
-<td class="role" sortval="<%= m.role.lft %>"><%= m.role.title || m.role.name %></td>
-<td class="created_at"sortval="<%= m.created_at %>"><%= time_lost_in_words m.created_at, Time.now, true %> ago</td>
-<td class="user_note"><%= m.user_note %></td>
-<td class="status" sortval="<%= m.status %> <%= m.approved_at || m.updated_at %>">
-<%= case 
-    when !m.reviewed?  then "Pending"
-    when m.approved? then "Approved #{time_lost_in_words m.approved_at, Time.now, true} ago"  
-    when m.rejected? then "Declined #{time_lost_in_words m.updated_at, Time.now, true} ago"  
-    end %>  
-</td>
-<td class="reviewer_note"><%= m.reviewer_note %></td>
-</tr>
-<% end %>
-</tbody>
-</table>
+<h3><%= @user.full_name %> - complete membership history</h3>
+
+<%= partial './memberships_table', :memberships => @memberships %>
+
+<%= form_for @subscription_membership, :action => '/' do %>
+<%= partial './membership_form', :with => @subscription_membership %>
+<% end =%>
+
 </div>

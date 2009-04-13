@@ -102,6 +102,9 @@ if defined?(Merb::Plugins)
       scope.resources :users do |user|
         user.resources :memberships
       end
+      
+      # TODO.  rework this into a REST style route
+      scope.match("/users/:user_id/requests").to(:action => 'requests', :controller => 'users').name(:requests)
 
       # user registration and passwords      
       scope.to(:controller => "users") do |c|

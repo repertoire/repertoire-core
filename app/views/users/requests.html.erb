@@ -1,0 +1,7 @@
+<div class="core">
+<h3><%= @user.full_name %> - pending role requests for your review</h3>
+
+<% links = @memberships.map { |m| link_to 'Review', url(:edit_user_membership, m.user, m) } %>
+<%= partial './memberships_table', :memberships => @memberships.zip(links) %>
+
+</div>

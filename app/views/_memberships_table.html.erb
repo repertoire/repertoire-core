@@ -1,0 +1,70 @@
+<% # parameters: memberships, either an array of membership objects, or a hash of membership => link pairs %>
+
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.js" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.tablesorter.patched.js" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.truncator.js" %>
+
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership.css" %>
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/lib/jquery.tablesorter.blue/style.css" %>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#memberships").tablesorter({
+      sortList: [[0,0]],                               // start sorted by role
+      headers: { 0: { sorter: 'numeric' },             // roles sorted by relative permissions
+                 1: { sorter: 'text' },                // sortval outputs lexically ordered date format
+                 3: { sorter: 'text' },
+                 2: { sorter: false },                 // disable sorting on notes
+                 4: { sorter: false },
+                 5: { sorter: false } },               // action column
+      textExtraction: function(node) { 
+        var val = $(node).attr('sortValue');
+        if (undefined == val)
+          val = $(node).text();
+        return val;
+      }
+    });
+
+    // convert action links into entire row clicks and hide action row
+    $(".membership_table tbody tr").
+      hover(function() { $(this).addClass('hover').removeClass('collapse'); },
+            function() { $(this).removeClass('hover').addClass('collapse'); }).
+      click(function() { document.location = $(this).find('.action a').attr('href'); });
+    $(".membership_table .action").hide();
+
+    // truncate long notes until hover
+    $(".membership_table tr").addClass('collapse');
+    
+  });
+</script>
+
+<table id="memberships" class="tablesorter membership_table"  border="0" cellpadding="0" cellspacing="1" >
+<thead>
+<tr>
+<th class="role">Role</th>
+<th class="created_at">Requested</th>
+<th class="user_note">User note</th>
+<th class="status">Status</th>
+<th class="reviewer_note">Reviewer note</th>
+<th class="action">Action</th>
+</tr>
+</thead>
+<tbody>
+<% memberships.each do |m, link| %>
+<tr class="membership <%= m.status %>">
+<td class="role" sortValue="<%= m.role.lft %>"><div><%= m.role.title || m.role.name %></div></td>
+<td class="created_at"sortValue="<%= m.created_at %>"><div><%= time_lost_in_words m.created_at, Time.now, true %> ago</div></td>
+<td class="user_note"><div><%= m.user_note %></div></td>
+<td class="status" sortValue="<%= m.status %> <%= m.approved_at || m.updated_at %>"><div>
+<%= case 
+    when !m.reviewed? then "Pending"
+    when m.approved?  then "Approved #{time_lost_in_words m.approved_at, Time.now, true} ago"  
+    when m.rejected?  then "Declined #{time_lost_in_words m.updated_at, Time.now, true} ago"  
+    end %>  
+</div></td>
+<td class="reviewer_note"><div><%= m.reviewer_note %></div></td>
+<td class="action"><div><%= link %></div></td>
+</tr>
+<% end %>
+</tbody>
+</table>

@@ -3,8 +3,10 @@ class RepertoireCore::Memberships < RepertoireCore::Application
   include Merb::Helpers::DateAndTime
   
     def index(user_id)
-      @user = User.get(user_id)
-      @memberships = @user.memberships
+      @user                    = User.get(user_id)
+      @memberships             = @user.memberships
+      @subscription_membership = Membership.new(:user => @user)
+      
       display @memberships
     end
 

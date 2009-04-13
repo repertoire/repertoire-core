@@ -1,0 +1,21 @@
+<table id="subscribe" class="tablesorter membership_table"  border="0" cellpadding="0" cellspacing="1" >
+<thead>
+<tr>
+<th class="role">Role</th>
+<th class="created_at">Requested</th>
+<th class="user_note">User note</th>
+<th class="status">Status</th>
+<th class="reviewer_note">Reviewer note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="membership">
+<td class="role"><%= text_field :role_id %></td>
+<td class="created_at"><%= membership_form.created_at %></td>
+<td class="user_note"><%= text_area :user_note %></td>
+<td class="status"></td>
+<td class="reviewer_note"><%= text_area :reviewer_note %></td>
+</tr>
+</tbody>
+</table>
+<div><%= submit 'Subscribe' %></div>

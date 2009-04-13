@@ -1,8 +1,18 @@
 /* default css for the Repertoire membership pages */
 
-.core #memberships .user_note     { width: 30%; }
-.core #memberships .reviewer_note { width: 30%; }
+.core .membership_table .role          { width: 15%; }
+.core .membership_table .created_at    { width: 10%; }
+.core .membership_table .user_note     { width: 30%; }
+.core .membership_table .status        { width: 15%; }
+.core .membership_table .reviewer_note { width: 30%; }
 
-#memberships .rejected td  { color: red; }
-#memberships .pending  td  { color: orange; }
-#memberships .approved td  { color: #3D3D3D; }
+.core .membership_table .rejected td  { color: red; }
+.core .membership_table .pending  td  { color: orange; }
+.core .membership_table .approved td  { color: #3D3D3D; }
+
+.core .membership_table .hover td              { background: #E6EEEE; cursor: pointer; }
+.core .membership_table .collapse td div       { overflow:hidden; max-height: 4em; }
+
+.core .membership_table textarea,
+.core .membership_table input    { width: 100%; height: 100%; border: 1px solid gray; font-size:9pt; color: #3D3D3D; }
+.core .membership_table textarea { height: 10em; }
