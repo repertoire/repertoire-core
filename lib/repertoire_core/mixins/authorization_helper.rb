@@ -19,7 +19,7 @@ module RepertoireCore
       #       #... <snip>
       #    end
       # 
-      def require_role(*args)
+      def require_role!(*args)
         session.authenticate!(request, params) unless session.authenticated?
       
         opts = args.last.kind_of?(Hash) ? args.pop : {}
@@ -29,7 +29,7 @@ module RepertoireCore
       end
       
       # convenience alias for users wanting a filter like merb-auth's ensure_authenticated
-      alias_method :ensure_authorized, :require_role
+      alias_method :ensure_authorized, :require_role!
     
       # If the currently authenticated user belongs to one of the institution codes
       # listed, the filter passes.  Otherwise the Forbidden exception will be

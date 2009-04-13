@@ -12,19 +12,19 @@ describe RepertoireCore::Mixins::AuthorizationHelper do
         provides :text
 
         def index
-          require_role(:itm_guest)
+          require_role!(:itm_guest)
           display 'lots of Items'
         end
         def show
-          require_role(:itm_guest)
+          require_role!(:itm_guest)
           display 'a single Item'
         end
         def create
-          require_role(:itm_member)
+          require_role!(:itm_member)
           display 'created your Item!'
         end
         def delete
-          require_role(:itm_manager)
+          require_role!(:itm_manager)
           display 'deleted that Item!'
         end
       end

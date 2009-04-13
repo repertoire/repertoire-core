@@ -1,3 +1,220 @@
+=== Repertoire Core README ===
+
+The Repertoire Core module collects together tools that 90% of Hyperstudio
+projects require.  General purpose libraries that provide widely-used
+functionality should be added here.
+
+Currently the toolkit offers these facilities:
+
+(1) User registration, forgotten password, basic profile page
+(2) Authorization, using hierarchical user roles
+(3) Role management: granting, subscribing, and reviewing
+(4) Ajax utilities: jquery libraries, form validation, etc.
+
+There's no need to use all the tools together: you can cherry-pick the tools
+that are useful to your project.  Given that most every project will require
+Hyperstudio logins, some basic administrative access control, and ajax
+widgets, this is the place to look.  
+
+The role management system (3) is designed for highly-collaborative projects
+without a single administrator to control access, and so may be overkill for
+some cases.  However, it's included here since it's a clear extension of the
+user management and authorization tools.
+
+A short overview of each tool follows.
+
+
+===== User registration and password management =====
+
+Adds support for user signup, account activation via email, forgotten password
+reset via email, a basic user profile page, and a change password page.
+
+The framework's built in session authentication system does a good job of
+limiting access to users who have logged in, but provides no UI for the entire
+signup and account management process.  After you've added the registration
+routes to your application, this tool seamlessly adds these pages to your app.
+
+You can customize the look of all of the pages using CSS over-rides, or write
+your own views.  You can also configure where in the client app your pages
+redirect after login, activation, etc., and can add project-specific info
+about users to the model via an association.
+
+Because the system activates accounts only after confirming a valid email, it
+allows your projects a reliable way to confirm users' institutional
+affiliations (i.e. MIT controls password access for anyone with an
+'joe@mit.edu').  This is useful for site-licensing and as a low-administration
+way of controlling access.
+
+After following the INSTALL directions, the registration and password tool is
+configured and ready to use.  The user administration API is available via the
+console, as well as in your project's web pages.  See the FAQ for details on
+specific issues.
+
+
+===== Role and authorization control =====
+
+Allows your project to control access to portions of its functionality based
+on the current user's privileges.  Each project can define a set of project-
+specific roles such as manager, editor, contributor, and guest, and easily
+check permissions in the controller.  Unlike basic RBAC (role-based
+role-based authorization) systems, Repertoire roles are hierarchical.  This
+keeps role declarations simple and easy to check, and role membership into
+concise.
+
+As an example, your project choose a set of basic roles: admin, manager,
+contributor, and guest.  You could then configure your project so that guests
+can view materials and comment, but only contributors can upload new 
+materials.  Editors might be able to revise and publish the best materials
+to the top level page; and admins could delete materials.  Or you might choose
+another role arrangement: your project code sets up the roles and their
+activities, and the toolkit takes care of checking role logic and associating
+users with roles.
+
+To use, you declare your roles in a database migration.  Following up the
+example above: [*]
+
+migration 3, :setup_roles  do
+  up do
+    Role.declare do
+      Role[:prj_admin].               
+        implies(:prj_manager).        
+        implies(:prj_contributor).
+        implies(:prj_guest)
+    end
+  end
+end
+
+Then in your controller actions you check the currently logged in user's
+roles.  If the user doesn't have sufficient privileges, a Forbidden (HTTP
+403) is raised.
+
+class Materials < Application
+  ...
+  def create(item)
+    require_role! :prj_contributor
+    ...
+  end
+  
+  def delete(item)
+    require_role! :prj_admin
+    ...
+  end
+  ...
+end
+
+For simple projects with only a few roles to control administrative access,
+it's easiest to manage role membership using the console:
+
+> joe = User.first(:email => 'joe@company.com')
+> Role.grant!(:prj_admin, joe)
+
+Finally, so users aren't constantly encountering 'Insufficient privileges'
+pages, you can also check roles in your views:
+
+...
+<% if session.user.has_role?(:contribute) do %>
+  <a href="<%= url(:upload_page) %>">Contribute new materials</a>
+<% end %>
+
+
+[*] In real life you should declare role titles before you arrange them
+    into a hierarchy:
+
+  Role.declare do
+    Role[:prj_admin,   "Admin - Foo Project"]
+    Role[:prj_manager, "Manager - Foo Project"]
+    ...
+    Role[:prj_admin].implies(:prj_manager)....
+  end
+
+  *Always* namespace your roles by using a project-specific prefix.
+  
+
+===== Distributed role management: granting and subscribing UI =====
+
+The role based authorization system above is fine for projects with just a
+few administrative pages.  This will cover ~ 70-80% of use cases, where
+only a few users need extra access to do tasks like update or delete
+materials.  In these cases, it's simplest to administer role membership by
+hand using the console.
+
+For projects with more than a few roles, or with many users at differing
+levels so access, it would be preferable to distribute administrative tasks a
+little.  If more privileged users could grant role membership for their own
+projects or sub-roles, projects could administer themselves.  Taking it a step
+further, if users could ask for new privileges through the interface, it would
+streamline the experience by letting users join projects and participate in
+different capacities at their own initiative, while still controlling access.
+
+For example, in the hierarchy of roles above, it would be best if project
+managers could appoint new contributors without the intervention of a
+Repertoire sysadmin.  Likewise, it would open things up if members could
+request contributor access rather than waiting for a manager to grant it.
+After quickly reviewing a member's request email, the manager could grant contributor access - or hold off and ask for more info.
+
+Repertoire's role granting and subscribing system provides this sort of
+decentralized and collaborative access. The aim is to foster projects with
+lots of user participation and collaboration, while still controlling access
+where it's necessary.  To do this, you can also model who can grant a given
+role, and whether it's open so other users can subscribe to it.
+
+To model the refinements above, we might use this role declaration.  'grants'
+is a stronger version of 'implies' that means the role can also be granted;
+'open' means the role can be subscribed to, pending the grantor's review.
+
+migration 4, :setup_grantable_roles  do
+  up do
+    Role.declare do
+      Role[:prj_admin].                   # closed role
+        grants(:prj_manager).             # grantable only by prj_admin
+        grants(:prj_contributor).open.    # grantable by prj_manager, or
+                                          #   open to subscription, pending
+                                          #   prj_manager approval
+        implies(:prj_guest).open          # open to subscription - no
+                                          #   approval necessary
+    end
+  end
+end
+
+And that's all!  You've just set up a self-administering system of users and
+roles, coordinated by the user profile list and notification emails.  To
+grant a role, admins and managers find a user in the profile list and then
+select the role from a list of those they have privileges to grant.  The user
+then receives an email informing them of their new privileges.
+
+...
+
+TODO. - finish description of subscription and review process
+      - detail view API for subscription hooks
+      - describe membership history page
+
+
+===== Ajax toolkit and utilities =====
+
+The Repertoire Core module is also a central distribution point for other
+shared Hyperstudio code - such as jQuery libraries and plugins.  For a
+current list of 3rd party plugins, see the 'public/javascripts/lib' directory.
+
+A short description of Hyperstudio-specific ajax plugins follows:
+
+* Live form validation plugin (rep.ajax-validate.js)
+
+This jQuery plugin allows you to quickly add progressive ajax form validation
+for DataMapper models.  Any DataMapper validation can be checked directly in
+the HTML form, as a user fills in fields.  Data is validated using a json web-
+service on your controller.  
+
+This has two advantages: (1) you can check database-specific info, like making 
+sure a login name is unique, or that an association exists. (2) it keeps all
+validation code in a single place - the DataMapper model.  For usage 
+instructions, see the plugin's inline documentation, and look at the code for
+user profiles (the validate_user action in app/controllers/users).
+
+
+-----
+
+Remaining topics to discuss...
+
 - redirecting to another URL after using slice controller
 - including assets in your application
 - css namespacing
@@ -6,9 +223,3 @@
 - slice installation
 - rbac overview / per-project roles & how to create
 - controller filters for authorization
-
-
-(1) User registration, forgotten password, basic profile page, password change
-(2) Authorization, using hierarchical user roles
-(3) Role management: granting, subscribing, and reviewing
-(4) Ajax utilities

@@ -107,16 +107,16 @@ A. Repertoire core delegates authentication to the merb-auth-slice-password plug
 
 Q. How do I require authorization for a given page?
 
-A. (1) Call require_role at the beginning of your action:
+A. (1) Call require_role! at the beginning of your action:
        def delete_em_all
-         require_role(:foo_role)
+         require_role!(:foo_role)
          ...
        end
    (2) Use a before filter to protect all actions in a controller:
        before :ensure_authorized, :with => [:system_administrator, :message => 'You need sysadmin role to remove the hard drive']
 
-   If you provide a list of roles, any match will allow access.  You can also pass :message => 'foo' to require_role (in fact,
-   require_role and ensure_authorized are aliases)
+   If you provide a list of roles, any match will allow access.  You can also pass :message => 'foo' to require_role! (in fact,
+   require_role! and ensure_authorized are aliases)
 
 
 Q. Sure, that provides access control over actions, but what's the best way to avoid presenting users with the unavailable
@@ -156,7 +156,7 @@ Q. Does Repertoire core have routing extensions, only in-controller methods for 
 
 A. For now, only controller filters.  In general one wants to provide different levels access to methods on the same controller (e.g.
    guests can browse posts, but only members can add, and managers delete).  Given this, your best bet might be a single filter
-   for base authentication (guest), and then to stick to require_role inside actions.
+   for base authentication (guest), and then to stick to require_role! inside actions.
 
 
 Q. How do I make a role closed to subscription or granting (other than what I do by fiat in the console)? Conversely,
