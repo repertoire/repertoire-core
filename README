@@ -41,7 +41,7 @@ about users to the model via an association.
 
 Because the system activates accounts only after confirming a valid email, it
 allows your projects a reliable way to confirm users' institutional
-affiliations (i.e. MIT controls password access for anyone with an
+affiliations (i.e. MIT controls password access for anyone with an email like
 'joe@mit.edu').  This is useful for site-licensing and as a low-administration
 way of controlling access.
 
@@ -61,14 +61,14 @@ role-based authorization) systems, Repertoire roles are hierarchical.  This
 keeps role declarations simple and easy to check, and role membership into
 concise.
 
-As an example, your project choose a set of basic roles: admin, manager,
+As an example, your project might choose a set of core roles: admin, manager,
 contributor, and guest.  You could then configure your project so that guests
 can view materials and comment, but only contributors can upload new 
 materials.  Editors might be able to revise and publish the best materials
 to the top level page; and admins could delete materials.  Or you might choose
 another role arrangement: your project code sets up the roles and their
-activities, and the toolkit takes care of checking role logic and associating
-users with roles.
+activities, and the toolkit takes care of checking role logic and managing
+users' associations with roles.
 
 To use, you declare your roles in a database migration.  Following up the
 example above: [*]
@@ -84,7 +84,7 @@ migration 3, :setup_roles  do
   end
 end
 
-Then in your controller actions you check the currently logged in user's
+Then in your controller actions, check the currently logged in user's
 roles.  If the user doesn't have sufficient privileges, a Forbidden (HTTP
 403) is raised.
 
@@ -141,27 +141,27 @@ hand using the console.
 For projects with more than a few roles, or with many users at differing
 levels so access, it would be preferable to distribute administrative tasks a
 little.  If more privileged users could grant role membership for their own
-projects or sub-roles, projects could administer themselves.  Taking it a step
+projects or sub-roles, projects would administer themselves.  Taking it a step
 further, if users could ask for new privileges through the interface, it would
 streamline the experience by letting users join projects and participate in
-different capacities at their own initiative, while still controlling access.
+different capacities at their own initiative - while still controlling access.
 
-For example, in the hierarchy of roles above, it would be best if project
-managers could appoint new contributors without the intervention of a
-Repertoire sysadmin.  Likewise, it would open things up if members could
-request contributor access rather than waiting for a manager to grant it.
-After quickly reviewing a member's request email, the manager could grant
-contributor access - or hold off and ask for more info.
+For example, in the hierarchy of roles above, it would be best if project 
+managers could appoint new contributors without the intervention of a 
+Repertoire sysadmin at the console. Likewise, it would open things up if
+members could request contributor access rather than waiting for a manager
+to grant it. After quickly reviewing a member's request email, the manager
+could grant contributor access - or hold off and ask for more info.
 
 Repertoire's role granting and subscribing system provides this sort of
 decentralized and collaborative access. The aim is to foster projects with
 lots of user participation and collaboration, while still controlling access
-where it's necessary.  To do this, you can also model who can grant a given
+where it's necessary.  To do this, you can also record who can grant a given
 role, and whether it's open so other users can subscribe to it.
 
-To model the refinements above, we might use this role declaration.  'grants'
+To model the refinements above, we might use this role declaration.  ('grants'
 is a stronger version of 'implies' that means the role can also be granted;
-'open' means the role can be subscribed to, pending the grantor's review.
+'open' means the role can be subscribed to, pending the grantor's review.)
 
 migration 4, :setup_grantable_roles  do
   up do
@@ -214,13 +214,13 @@ user profiles (the validate_user action in app/controllers/users).
 
 -----
 
-Remaining topics to discuss...
+Topics to address here or in FAQ.
 
 - redirecting to another URL after using slice controller
-- including assets in your application
+- including assets in your application FAQ
 - css namespacing
 - command-line account administration
-- shared models; installing/migrations
-- slice installation
-- rbac overview / per-project roles & how to create
-- controller filters for authorization
+- shared models; installing/migrations DONE
+- slice installation DONE
+- rbac overview / per-project roles & how to create DONE
+- controller filters for authorization  DONE
