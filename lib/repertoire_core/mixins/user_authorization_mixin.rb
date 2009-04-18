@@ -81,32 +81,38 @@ module RepertoireCore
         # Semantically it is equivalent to self.grant(:foo, self), except it doesn't raise an exception if
         # review doesn't pass immediately.
         def subscribe(role_name, message=nil)
-          role = Role.first(:name => role_name)
+          role = Role[role_name]
         
           # TODO.  once DataMapper supports passing in entity models to finders, remove _id
-          rejected_requests = self.memberships.all(:role_id => role.id, :reviewer_id => nil, :approved_at.not => nil)
-          active_requests   = self.memberships.all(:role_id => role.id)
-          relevant_requests = active_requests - rejected_requests
-
-          if relevant_requests.empty?
-            Membership.create(:user => self, :role => role, :user_note => message)
-          else
-            relevant_requests.first
-          end
+          prior_requests = self.memberships.all(:role_id => role.id)
+          approved = prior_requests.find { |r| r.approved? }
+          pending  = prior_requests.find { |r| !r.reviewed? }
+          
+          approved || pending || Membership.create(:user => self, :role => role, :user_note => message)
         end
 
         # Grant a role to another user, returning the approved membership request.
+        #
+        # If the user already has the role, the existing membership request is
+        # returned; if the user has an existing request pending, that one is approved.
         # 
         # Raises an exception if this user lacks permission to grant the role.
         def grant(role_name, user, message=nil)
-          role = Role.first(:name => role_name)
+          role    = Role[role_name]
           request = nil
-
+          
+          # TODO.  once DataMapper supports passing in entity models to finders, remove _id
+          prior_requests = user.memberships.all(:role_id => role.id)
+          
           transaction do |t|
-            request = Membership.create(:user => user, :role => role)
+            approved = prior_requests.find { |r| r.approved? }
+            pending  = prior_requests.find { |r| !r.reviewed? }
+            request  = approved || pending || Membership.create(:user => user, :role => role)
+            
             request.review(self, true, message) unless request.reviewed?
+            request.reload
           end
-        
+          
           request
         end
       

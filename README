@@ -180,13 +180,13 @@ end
 And that's all!  You've just set up a self-administering system of users and
 roles, coordinated by the user profile list and notification emails.  
 
-There are four basic entry points to the administration pages: (1) Membership
+There are three basic entry points to the administration pages: (1) Membership
 history, which shows the current user's role memberships, and presents a list
 of potential new roles to subscribe to.  (2) Search users, which lets grantors
 find specific users, look at their membership history, and presents a list of
 potential new roles they're qualified to grant.  (3) Review requests, which
 presents grantors with a list of the currently open requests they're qualified
-to grant or deny [ this is where most users' time will be spent ]  
+to grant or deny.
 
 The interface itself aims to make the process feel like a simple exchange of 
 messages.  The membership history is color-coded, and can be sorted by request
@@ -196,8 +196,9 @@ choices and presenting options for subscription in a stepwise fashion.  Also,
 whenever in message composition mode, it shows the past role history relevant
 to the current role request, grant, or review.
 
-You can reach the role admin functionality from the profile page for each user,
-or their memberships url:  http://<host>/users/<username>/memberships
+You can reach the role admin functionality from the profile page for each
+user, or from their memberships url:
+http://<host>/users/<username>/memberships
 
 
 ===== Ajax toolkit and utilities =====
@@ -220,17 +221,3 @@ sure a login name is unique, or that an association exists. (2) it keeps all
 validation code in a single place - the DataMapper model.  For usage 
 instructions, see the plugin's inline documentation, and look at the code for
 user profiles (the validate_user action in app/controllers/users).
-
-
------
-
-Topics to address here or in FAQ.
-
-- redirecting to another URL after using slice controller
-- including assets in your application FAQ
-- css namespacing
-- command-line account administration
-- shared models; installing/migrations DONE
-- slice installation DONE
-- rbac overview / per-project roles & how to create DONE
-- controller filters for authorization  DONE

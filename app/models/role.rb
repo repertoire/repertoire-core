@@ -97,9 +97,21 @@ class Role
       Merb.logger.warn("Deus ex machina grant of :#{role_name} to #{user.full_name} at #{Time.now}")
       request = nil
       
+      role = Role[role_name]
+      prior_requests = user.memberships.all(:role_id => role.id)
+      
       transaction do |t|
-        role = Role[role_name]
-        request = Membership.create(:user => user, :role => role, :approved_at => Time.now, :reviewer_note => message)
+        approved = prior_requests.find { |r| r.approved? }
+        pending  = prior_requests.find { |r| !r.reviewed? }
+        request  = approved || pending || Membership.create(:user => user, :role => role)
+
+        unless request.approved?
+          request.approved_at   = Time.now
+          request.reviewer_note = message
+        end
+        
+        request.save!
+        request.reload
       end
       
       request

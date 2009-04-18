@@ -219,7 +219,7 @@ describe Role do
       Membership.all.size.should == 1
     end
     
-    it "should return the relevant membership on grants, subscriptions and reviews " do
+    it "should return the relevant membership on grants, subscriptions and reviews" do
       Role.declare do
         Role[:president].grants(:secretary)
         Role[:secretary].grants(:janitor)
@@ -232,7 +232,39 @@ describe Role do
       jack.review(request, true).should be_approved
     end
     
-    it "should grant automatically if the subscribing user could grant the role"
+    it "should grant automatically if the subscribing user could grant the role" do
+      Role.declare do
+        Role[:president].grants(:secretary).grants(:janitor).open
+      end
+      nick, jack = (1..2).map { User.create(valid_user_hash) }
+
+      Role.grant!(:president, nick).should be_approved
+      nick.subscribe(:janitor).should be_approved
+      
+      jack.subscribe(:janitor).should_not be_reviewed
+    end
+    
+    it "should use an existing pending or approved request if the user attempts to re-grant" do
+      Role.declare do
+        Role[:kiwanis].grants(:toastmasters).open
+      end
+      @john, @tim, @suzy, @bill, @ted = (1..5).map { User.create(valid_user_hash) }
+      Role.grant!(:kiwanis, @john)
+      
+      # check granting with a pending review available (actually same as review)
+      req = @tim.subscribe(:toastmasters)
+      @john.grant(:toastmasters, @tim).should == req
+      
+      req = @bill.subscribe(:toastmasters)
+      Role.grant!(:toastmasters, @bill).should == req
+      
+      # check granting an already approved role
+      req = Role.grant!(:toastmasters, @suzy)
+      @john.grant(:toastmasters, @suzy).should == req
+      
+      req = Role.grant!(:toastmasters, @ted)
+      Role.grant!(:toastmasters, @ted).should == req
+    end
   end
 
   describe "granting inference rules" do      
@@ -282,6 +314,23 @@ describe Role do
       
       # membership for open roles succeeds immediately
       nick.has_role?(:toastmasters).should be_true
+    end
+    
+    it "should return an existing pending or approved request if the user attempts to re-subscribe" do
+      Role.declare do
+        Role[:kiwanis].grants(:toastmasters).open
+      end
+      @john, @tim = (1..2).map { User.create(valid_user_hash) }
+      Role.grant!(:kiwanis, @john)
+      
+      # check subscribing twice in a row without intervening review
+      req = @tim.subscribe(:toastmasters)
+      @tim.subscribe(:toastmasters).should == req
+      
+      # check subscribing to an approved role
+      @john.review(req, true)
+      req.reload
+      @tim.subscribe(:toastmasters).should == req
     end
     
   end

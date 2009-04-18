@@ -1,51 +1,13 @@
-- link back to project on signup page
-
-- current roles on profile page + link to history DONE
-- link to subscribe on profile page NOT TO DO
-- link to subscribe on history page  DONE
-
-- name column in request page DONE
-- put guards on request pages -- can only look at own DONE
-
-- update review page to use email formatting DONE
-- navigation:  My Profile / My History / Review Requests / Search Users DONE
-
-- make sure using slice_url DONE
-- specs NOT TO DO
-- test fixtures for demoing
-
-- profile synonym 
-
-- make sure review email sending right url to review page
-
-- note params not going thru  DONE
-- see why data mapper identity map isn't working  DONE
-
-- check in berliner sehen
-
 TODO:
 
 Potential features:
 
 - 'remember me' persistent logins using a cookie
-- user interface for RBAC management
 - multiple user emails (= institutional affiliations) for a user, like in facebook
 - allow users to re-register to an email if unactivated?
 - cascading authorization schemes (like merb-auth's strategies?)
-
-- param protection for passwords in log [ merb-param-protection working?? ]
+- per-project email tailoring (esp. point to useful url with notification of a grant)
 
 Outstanding items:
 
-- README	
-- specs for authorization filter in controller
-- specs for institutional filter in controller
-
-- rake tasks for sub-application to install its own roles  DONE
-- specs for granting/subscribing  DONE
-- specs for webservice methods  DONE
-- default css  DONE
-- check forbidden page
-- update to accommodate slice_prefix  DONE
-
-
+- specs for controllers (pending Merb improvements to url generation in slices)
