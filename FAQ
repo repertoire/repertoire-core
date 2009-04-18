@@ -89,6 +89,11 @@ defined in the Repertoire Core files.  You can also use jquery to add new functi
 documentation for info on completely over-riding views.
 
 
+Q. How to remove unwanted information from the user profile pages.
+
+A. Use display:none in your application's css.
+
+
 Q. Can I access Repertoire core's administrative functions as a web service?
 
 A. Yes.  The controller methods are written to render HTML pages or for use with ajax web services.  With the exception of the form
@@ -99,6 +104,12 @@ Q. How do I get the default login page to use same layout as the rest of the pag
 
 A. The login page uses the application layout unless specified otherwise.  You can copy the Repertoire core layout into your layouts
 directory if necessary.
+
+
+Q. Is there a way to replace Gravitar for user profile pictures?  The extra registration step is annoying.
+
+A. No support yet.  But it's possible to revise the profile page with a file upload, then use ImageScience to thumbnail the picture.
+It's unclear as of yet, however, where to store cross-project assets like these files.  So that issue would need to be solved.
 
 
 Q. Is there a quick way to reset a user's password?
@@ -170,6 +181,14 @@ is that users can see your application's security structure in the html source. 
 on the controller to actually keep them out, right?...)
 
 
+Q. How to link to the admin pages from my project?
+
+A. Write links in your own view code where is most appropriate for your project's graphic design.  In particular, you may wish to link
+to the role subscription page at appropriate places in your views, to suggest how users can get increased access.  This is why the
+subscription page expects to have role_name pre-populated: send the right one in according to context.  Then all the user needs to do is 
+enter a note and click subscribe.
+
+
 Q. Does Repertoire core have routing extensions, only in-controller methods for doing authorization?
 
 A. For now, only controller filters.  In general one wants to provide different levels access to methods on the same controller (e.g.
@@ -218,13 +237,70 @@ does "editor" in project "aop" mean the same thing as "editor" in project "ter"?
 The conclusion was to use a single namespace for roles, and encourage projects to use prefixes: :ber_editor, cfrp_contributor, etc.
 
 
+Q. How would I set up a site-licensing system?
+
+A. Site-licensing has the advantage that it's very low admin, since it lets users in based on their institutional identity.  You
+probably don't want to embed licensed insitutions' codes directly in your software however.  For slightly better system you'll want to
+store the site licenses in the database model (say, SiteLicense), have a simple admin UI, and a single role for managing licenses.
+
+   model:
+   
+   class SiteLicense
+     include DataMapper::Resource
+     property :id, Serial
+     property :institution_code, String
+   end
+
+   migration:
+
+   Role.declare do
+     Role[:prj_license_manager]
+   end
+   
+   Create a resource to mange site licenses - listing, viewing, adding, deleting, etc.  Authorize access only to your :prj_license_manager
+   role.  Then in a before filter load up the currently active site licenses and use them to check users' institution codes:
+   
+   controller:
+   
+   before :check_site_licenses
+   def check_site_licenses
+     codes = SiteLicense.all.map { |license| license.institution_code }
+     require_institution codes
+   end
+   
+   At some point it would be nice to package up this functionality so it can be installed easily in any project.
+
+
+Q. How do I change the url in an approval or grant email to something specific to the role granted?  This way the user could see her new
+status immediately upon logging in
+
+A. There are no provisions for this (yet!)
+
+
+Q. What order do roles appear in the membership UI pages?  It's not alphabetical.
+
+A. More privileged roles will appear earlier, and related roles are grouped together.  See Role#sort_order.
+
+
 Q. Is Repertoire RBAC "true" role-based access control?
 
 A. No.  (1) RBAC as defined by NIST also includes a notion of individual "permissions" that are reconfigured into roles as institutional
 organization changes.  That's a level of abstraction we don't need: each project can be relatively sure of the roles it expects its users
 to fulfil, so we just check roles directly.  (2) Repertoire arranges roles into a hierarchy, which isn't necessarily a requirement of
 NIST RBAC.  (3) Repertoire roles only grant access, they never deny it.  This avoids logical conundrums and the need for hueristics.
-(4) Traditional RBAC has no notion of subscribing or requesting a role that one doesn't have.
+(4) Traditional RBAC has no workflow for subscribing or requesting a role that one doesn't have.
+
+
+Q. My project has a concept of "groups."  Should I use Repertoire core roles to model this?
+
+A. Probably not.  Repertoire core is designed to handle one thing - authorization - and to do it well.  If you need to model community
+relationships, institutional structures, friendships, courses, or other connections between people, it's best to develop a domain
+specific model.
+
+One way to think of it is that RBAC roles best define the user's relationship to system resources, not to other users.  Often when 
+the term "groups" comes up in a design it's a sign of an ill-defined problem, and it's worth probing deeper for the specific user 
+activities the software should enable, and modeling those.  Usually it becomes obvious the group is actually a logical aggregation of
+other data characteristics -- all workers with the same employer, or all students enrolled in the same course.
 
 
 =Common Problems=

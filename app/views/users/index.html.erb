@@ -1,0 +1,40 @@
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.suggest" %>
+
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership" %>
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/lib/jquery.suggest" %>
+
+<script language="javascript">
+  $(document).ready(function() {
+    $.ajaxSetup({
+      'beforeSend': function(xhr) {xhr.setRequestHeader("Accept", "text/plain")}  /* JQuery uses wrong content type header */
+    });
+    $("#name").suggest("<%= slice_url(:repertoire_core, :complete_name) %>", {
+      onSelect: function() { $("form #name").val(this.value); $("form #submit").click(); }
+    });
+    $('#name').focus();
+  });
+</script>
+
+<div class="core membership user_index">
+<div class="pageinfo">
+<%= navigation :search %>
+</div>
+<% unless message.empty? %>
+  <div class='error'><%= message[:error] %></div>
+  <div class='notice'><%= message[:notice] %></div>   
+<% end %>
+<%= form :action => slice_url(:repertoire_core, :users), :method => :get do %>
+  <div><label for="name">Search for user</label><%= text_field :name => 'name', :value => @name %><%= submit 'Search' %></div>
+<% end =%>
+</fieldset>
+
+<ul id="users">
+<% @users.each do |user| %>
+  <li>
+    <%= partial './user_detail', :with => user %>
+    <div style="clear: both;"/>
+  </li>
+<% end %>
+</ul>
+</div>

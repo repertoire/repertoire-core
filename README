@@ -178,16 +178,26 @@ migration 4, :setup_grantable_roles  do
 end
 
 And that's all!  You've just set up a self-administering system of users and
-roles, coordinated by the user profile list and notification emails.  To
-grant a role, admins and managers find a user in the profile list and then
-select the role from a list of those they have privileges to grant.  The user
-then receives an email informing them of their new privileges.
+roles, coordinated by the user profile list and notification emails.  
 
-...
+There are four basic entry points to the administration pages: (1) Membership
+history, which shows the current user's role memberships, and presents a list
+of potential new roles to subscribe to.  (2) Search users, which lets grantors
+find specific users, look at their membership history, and presents a list of
+potential new roles they're qualified to grant.  (3) Review requests, which
+presents grantors with a list of the currently open requests they're qualified
+to grant or deny [ this is where most users' time will be spent ]  
 
-TODO. - finish description of subscription and review process
-      - detail view API for subscription hooks
-      - describe membership history page
+The interface itself aims to make the process feel like a simple exchange of 
+messages.  The membership history is color-coded, and can be sorted by request
+date, role importance, or approval date.  The system takes considerable pains
+to show only logical options for subscribing and granting, pruning illogical
+choices and presenting options for subscription in a stepwise fashion.  Also,
+whenever in message composition mode, it shows the past role history relevant
+to the current role request, grant, or review.
+
+You can reach the role admin functionality from the profile page for each user,
+or their memberships url:  http://<host>/users/<username>/memberships
 
 
 ===== Ajax toolkit and utilities =====

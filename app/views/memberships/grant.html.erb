@@ -1,0 +1,39 @@
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership" %>
+
+<div class="core new membership">
+
+  <div class="pageinfo">
+    <%= partial './user_detail', :with => @user %>
+    <%= navigation (session.user == @user) ? :history : :search %>
+    <h3>Grant</h3>
+  </div>
+
+  <div class="instructions">
+    <p>You are granting this user a new role.  Please type a short note describing the reasons for this grant.  Your note will be emailed to the user and recorded in their role history.</p>
+    <p>Related subscriptions of interest - if any - are listed below.</p>
+  </div>
+
+  <fieldset id="subscribe">
+  <legend>Request new privileges</legend>
+    <% unless message.empty? %>
+      <div class='error'><%= message[:error] %></div>
+      <div class='notice'><%= message[:notice] %></div>   
+    <% end %>
+
+    <%= form :action => "/users/#{@user.shortname}/memberships/", :method => :post do %>
+      <% # TODO. why doesn't :action => resource(@membership.user, @membership) work? %>
+      <%= hidden_field :role_name, :value => @role.name %>
+      <div><label for="role">Role</label><div id="role" class="value"><%= @role.title || @role.name %></div></div>
+      <div><label for="date">Date</label><div id="date" class="value"><%= Time.now.formatted(:long) %></div></div>
+      <div><label for="reviewer_note">Note</label><div id="reviewer_note"><%= text_area :name => :note, :rows => 8, :cols => 60  %></div></div>
+      <div><%= submit "Subscribe" %></div>
+    <% end =%>
+  </fieldset>
+  <div style="clear:both"></div>
+
+  <% unless @history.empty? %>
+    <div class="relevant_byline">Items from your history relevant to the current request:</div>
+    <%= partial './memberships_table', :memberships => @history %>
+  <% end %>
+
+</div>

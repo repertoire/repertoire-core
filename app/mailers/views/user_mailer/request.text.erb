@@ -1,14 +1,9 @@
-Dear <%= @user.full_name %>,
+Dear <%= @reviewer.full_name %>,
 
 <%= @membership.user.full_name %> (<%= @membership.user.email %>) has requested <%= @membership.role.title %> access to Repertoire.  You are authorized to approve or deny.
 
+<%= ">> #{@membership.user_note}" if @membership.user_note %>
+
 Please log in to review the request as soon as possible:
-http://<%= Merb::Config[:host] %><%= #url(:role_requests) 
-%>
 
-<%= "User note: #{@membership.user_note}" if @membership.user_note %>
-
-Thank you,
-
-The HyperStudio Repertoire Team
-repertoire@mit.edu
+<%= @link %>

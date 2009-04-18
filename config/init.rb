@@ -100,37 +100,9 @@ Merb::BootLoader.before_app_loads do
 end
  
 Merb::BootLoader.after_app_loads do
-  DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
+  #DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
   DataMapper.auto_migrate!
 
-  u = User.new(:email => 'lorpgui@yahoo.com', :first_name => 'l', :last_name => 'g', :shortname => 'lorpie')
-  u.password = u.password_confirmation = 'lllll'
-  u.save!
-  u.activate
+  #require 'config/fixtures'
   
-  u2 = User.new(:email => 'guilorp@yahoo.com', :first_name => 'l', :last_name => 'gz', :shortname => 'lorpiez')
-  u2.password = u.password_confirmation = 'lllll'
-  u2.save!
-  u2.activate
-
-  Role.declare do
-    Role[:admin,   "System Administrator"]
-    Role[:foo_manager, "Manager, Foo Project"]
-    Role[:foo_member,  "Member, Foo Project"] 
-    Role[:foo_guest,   "Guest, Foo Project"]
-    
-    Role[:admin].
-      grants(:foo_manager).
-      grants(:foo_member).open.
-      implies(:guest).open
-  end
-  
-  Role.grant!(:foo_guest, u)
-  Membership.create(:user => u, :reviewer => u, :role => Role[:admin])
-  Role.grant! :foo_manager, u2, <<-TEXT
-  William Jefferson "Bill" Clinton (born William Jefferson Blythe III, August 19, 1946)[1] is a former President of the United States. He served as the 42nd President from 1993 to 2001. He was the third-youngest president; only Theodore Roosevelt and John F. Kennedy were younger when entering office. He became president at the end of the Cold War, and as he was born in the period after World War II, is known as the first Baby Boomer president.[2] His wife, Hillary Rodham Clinton, is currently the United States Secretary of State. She was previously a United States Senator from New York, and also candidate for the Democratic presidential nomination in 2008.
-  TEXT
-  u.subscribe :foo_member, <<-TEXT
-  Clinton left office with an approval rating at 66%, the highest end of office rating of any president since World War II.[12] Since then, he has been involved in public speaking and humanitarian work. Clinton created the William J. Clinton Foundation to promote and address international causes such as treatment and prevention of HIV/AIDS and global warming.
-  TEXT
 end

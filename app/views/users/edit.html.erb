@@ -1,8 +1,8 @@
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.js" %>
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.form.js" %>
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/rep.ajax-validate.js" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.form" %>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/rep.ajax-validate" %>
 
-<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/rep.ajax-validate.css" %>
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/rep.ajax-validate" %>
 
 <script language="javascript">
     $(document).ready(function() {
@@ -21,7 +21,13 @@
     <div class='error'><%= message[:error] %></div>
     <div class='notice'><%= message[:notice] %></div>
   <% end %>
-<%= form_for @user, :action => resource(@user), :method => :put do %>
+<ul id="roles">
+<% @user.roles.sort.each do |role| %>
+  <li><%= role.title || role.name %></li>
+<% end %>
+<a href="<%= slice_url(:repertoire_core, :user_memberships, :shortname => @user.shortname) %>">Membership History</a>
+</ul>  
+<%= form_for @user, :action => slice_url(:repertoire_core, :user, :shortname => @user.shortname), :method => :put do %>
   <div id="user-image"><a href="http://en.gravatar.com/" title="Click to change your image" target="_blank"><img src="<%= gravatar_image_url(@user.email) %>"/></a></div>
   <div><div id="email"><%= @user.email %></div><div class="institution"><%= @user.institution %></div></div>
   <%= error_messages_for @user if @user.errors %>
@@ -31,5 +37,6 @@
   <div><label for="bio">About me</label><br/><%= text_area :bio, :rows => 8, :cols => 60 %></div>
   <div><%= submit 'Update' %></div>
 <% end =%>
+
 </fieldset>
 </div>

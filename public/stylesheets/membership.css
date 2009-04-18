@@ -1,18 +1,71 @@
 /* default css for the Repertoire membership pages */
 
-.core .membership_table .role          { width: 15%; }
-.core .membership_table .created_at    { width: 10%; }
-.core .membership_table .user_note     { width: 30%; }
-.core .membership_table .status        { width: 15%; }
-.core .membership_table .reviewer_note { width: 30%; }
+/* membership history table */
 
-.core .membership_table .rejected td  { color: red; }
-.core .membership_table .pending  td  { color: orange; }
-.core .membership_table .approved td  { color: #3D3D3D; }
+.core a:link,
+.core a:active,
+.core a:visited { font-size: 9pt; text-decoration: none; color: #3875D7; }
+.core a:hover   { font-size: 9pt; text-decoration: underline; color: #3875D7; }
 
-.core .membership_table .hover td              { background: #E6EEEE; cursor: pointer; }
-.core .membership_table .collapse td div       { overflow:hidden; max-height: 4em; }
+body            { margin: 20px ;} /* why doesn't this work on content? */
 
-.core .membership_table textarea,
-.core .membership_table input    { width: 100%; height: 100%; border: 1px solid gray; font-size:9pt; color: #3D3D3D; }
-.core .membership_table textarea { height: 10em; }
+.membership .pageinfo                        { float: left; clear: both; width: 100%;}
+.membership .pageinfo .navigation            { float: right; clear: right; }
+.membership .pageinfo .navigation a          { margin: 4px; }
+.membership .pageinfo .navigation a.current  { text-decoration: underline;}
+
+.membership .membership_table                { margin-top: 20px; float:left; clear: both;}
+.membership .membership_table .user          { width: 15%; }
+.membership .membership_table .role          { width: 15%; }
+.membership .membership_table .created_at    { width: 10%; }
+.membership .membership_table .user_note     { width: 30%; }
+.membership .membership_table .status        { width: 15%; }
+.membership .membership_table .reviewer_note { width: 30%; } 
+
+.membership .membership_table .rejected td  { color: red; }
+.membership .membership_table .pending  td  { color: orange; }
+.membership .membership_table .approved td  { color: #3D3D3D; }
+
+.membership .membership_table .hover td     { background: #F8E8E8; cursor: pointer; }
+
+/* subscribe, grant, review pages */
+
+.membership fieldset        { width: 60%; float:left; }
+.membership .instructions   { float: right; clear: right; width: 30%; font-size: 9pt; margin-bottom: 8px; padding: 8px; border: 1px dashed red;  }
+.membership .instructions p { margin: 4px; }
+
+.membership fieldset textarea { border 1px solid gray: font-size: 9pt;}
+.membership .relevant_byline { margin-top: 10px; color:gray;}
+
+.membership .membership_table textarea,
+.membership .membership_table input    { width: 100%; height: 100%; border: 1px solid gray; font-size:9pt; color: #3D3D3D; }
+.membership .membership_table textarea { height: 10em; border: 1px dashed red;}
+
+/* review only */
+
+.membership.review #user_note            { width: 75%;}
+.membership.review #reviewer_note        { width: 75%;}
+.membership.review #submit_buttons input { float:left; clear: none; margin: 4px;}
+
+/* index only */
+
+.membership #add_role        { list-style-type: none; border: 0; margin: 0; padding: 0; width: 25%; }
+.membership #add_role .title { background-color:#8DBDD8; padding: 4px; margin-top: 8px; border:1px solid #FFFFFF; font-size: 8pt; font-weight: bold; cursor:pointer;}
+.membership #add_role li     { padding: 4px 8px 4px 4px; background-color:#E6EEEE; }
+
+/* for mocking inputs, but when values already set */
+.membership .value           { float:left; clear:both; border: 1px dotted gray; width: 50%; padding: 3px; margin: 3px 0 3px 0;}
+
+/* user index page */
+.membership.user_index #users { clear:both; list-style-type: none; border: 0; margin: 0; padding: 20px 0 0 0; }
+.membership.user_index #submit { clear:none; margin:2px; }
+.membership.user_index #users { width: 70%;}
+.membership.user_index #users li { border-bottom: 1px dotted gray; padding-bottom: 20px; }
+
+/* user details throughout management UI */
+.membership .user_detail              { width: 50%; float:left; clear:left; }
+.membership .user_detail .picture     { float:left; clear:left;}
+.membership .user_detail .stats       { float: left; clear: right; margin-left:10px; }
+.membership .user_detail .stats .name { font-size: 14pt;}
+
+.membership h3                        { float: right; clear: right; }

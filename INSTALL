@@ -25,7 +25,7 @@ end
 # 'login' property, since Repertoire uses email logins.  Your entire user model might look like this:
 class User
   include DataMapper::Resource
-  include RepertoireCore::User
+  include RepertoireCore::UserMixin
   property :id, Serial
 # property :login, String    <<< n.b. commented out
 end

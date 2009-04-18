@@ -1,4 +1,27 @@
-monday start: figure out how to get memberships table partial to have configurable order and pass in lambda to put around indiv. items
+- link back to project on signup page
+
+- current roles on profile page + link to history DONE
+- link to subscribe on profile page NOT TO DO
+- link to subscribe on history page  DONE
+
+- name column in request page DONE
+- put guards on request pages -- can only look at own DONE
+
+- update review page to use email formatting DONE
+- navigation:  My Profile / My History / Review Requests / Search Users DONE
+
+- make sure using slice_url DONE
+- specs NOT TO DO
+- test fixtures for demoing
+
+- profile synonym 
+
+- make sure review email sending right url to review page
+
+- note params not going thru  DONE
+- see why data mapper identity map isn't working  DONE
+
+- check in berliner sehen
 
 TODO:
 

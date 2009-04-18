@@ -8,9 +8,10 @@ class Role
   property :title,                      String
   is :nested_set
   
+  has n, :memberships
+  
   # granting and subscription control
   belongs_to :granted_by, :class_name => self.name, :child_key => [:granted_by_role_id], :order => [:lft.asc]
-  has n,     :grants,     :class_name => self.name, :child_key => [:granted_by_role_id], :order => [:lft.asc]
   property   :subscribable,             Boolean, :nullable => false, :default => false
   
   # administrative
@@ -24,16 +25,32 @@ class Role
   #      "open to no-one."  A non-subscribable role with no grantor can only be granted by the command line
   #      administrator.  A subscribable role with no grantor can be joined by anyone, without review.
       
+  # 
+  # Role member access
+  #
+  
+  # @returns all of this role's approved members
+  def members
+    memberships(:approved_at.not => nil, :order => [:approved_at]).user
+  end
+  
+  # @returns all of the users qualified to grant this role
+  def grantors
+    granted_by.members
+  end
+      
   #
   # Role status
   #
   
   # @returns true if role has open membership policy
+  # subscriptions to an open role approve automatically, without review
   def open_membership?
     self.subscribable && self.granted_by.nil?
   end
   
   # @returns true if the role's membership is closed
+  # membership in a closed role can only be granted at the console, not by other users
   def closed_membership?
     !self.subscribable && self.granted_by.nil?
   end
@@ -59,6 +76,10 @@ class Role
   # a different group of roles.
   def sort_order
     lft
+  end
+  
+  def <=>(other)
+    self.lft <=> other.lft
   end
   
   #
@@ -87,7 +108,7 @@ class Role
     # Look up a role (normal use), or declare a role (declaration context)
     #
     # Role.declare do
-    #   Role[:admin, "The system administrator"]
+    #   Role[:admin, "The system administrator"]     # can also be used to re-title a role
     # end
     #
     # later...
@@ -100,7 +121,11 @@ class Role
     #
     def [](name, title=nil)
       if @declarator
-        role = Role.first_or_create({:name => name}, {:title => title})
+        role = Role.first_or_create(:name => name)
+        if title && title != role.title
+          role.title = title
+          role.save!
+        end
         @declarator.state = role
         @declarator
       else
@@ -204,9 +229,11 @@ class Role
     #
     def grants(*others)
       others.each do |name|
-        r = Role.first(:name => name) || Role.new(:name => name)       # delay saving since dm-is-nested-set sets parent
+        r = Role.first_or_create(:name => name)
         r.granted_by = self.state
-        r.parent     ||= self.state
+        r.parent     = self.state if r.parent_id == 1         
+        # subtle workaround: dm-is-nested set sets parent_id automatically to root.  
+        # parent_id will be 1 (root) if this is a new record.  so set it together with grant
         r.save!
       end
       self.state = Role.first(:name => others.last)

@@ -99,12 +99,14 @@ if defined?(Merb::Plugins)
       
       # user profile updates 
       # TODO. authenticate
-      scope.resources :users do |user|
-        user.resources :memberships
+      scope.identify(User => :shortname) do
+        scope.resources :users, :key => :shortname do |user|
+          user.resources :memberships
+        end
       end
       
-      # TODO.  rework this into a REST style route
-      scope.match("/users/:user_id/requests").to(:action => 'requests', :controller => 'users').name(:requests)
+      # TODO.  rework this into a REST style route with its own controller
+      scope.match("/users/:shortname/requests").to(:action => 'requests', :controller => 'users').name(:requests)
 
       # user registration and passwords      
       scope.to(:controller => "users") do |c|
@@ -115,8 +117,9 @@ if defined?(Merb::Plugins)
         c.match("/reset_password").to(           :action => "reset_password").name(          :reset_password)
         c.match("/update_password").to(          :action => "update_password").name(         :update_password)
         
-        c.match("/validate").to(                 :action => "validate_user").name(           :validate_user)
-        c.match("/validate_reset_password").to(  :action => "validate_reset_password").name( :validate_reset_password )
+        c.match("/webservice/complete_name").to(    :action => "complete_name").name(           :complete_name)
+        c.match("/webservice/validate").to(         :action => "validate_user").name(           :validate_user)
+        c.match("/webservice/validate_reset_password").to(  :action => "validate_reset_password").name( :validate_reset_password )
       end
     end
   end

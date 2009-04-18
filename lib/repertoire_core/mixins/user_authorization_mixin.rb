@@ -26,9 +26,25 @@ module RepertoireCore
 
          # Roles this user has, either directly or by inference        
         def expanded_roles
-          Role.self_and_descendants(*roles)
+          Role.self_and_descendants(*self.roles)
         end
-      
+        
+        # Provide a list of membership requests relevant to the given role (as context for review decisions)
+        #
+        # Specifically, returns all membership requests by this user, for roles that encompass, equal, or
+        # are encompassed by the given role.
+        #
+        # If no role name is provided, the entire history will be returned.
+        def history(role_name=nil)
+          if role_name.nil?
+            self.memberships
+          else
+            role             = Role[role_name]
+            related_roles    = role.ancestors | role.self_and_descendants
+            related_role_ids = related_roles.map { |r| r.id }        # DM TODO.  related_roles.memberships ...
+           self.memberships.all(:user_id => self.id, :role_id.in => related_role_ids)
+          end
+        end
 
         #
         # Authorization checking
@@ -136,18 +152,29 @@ module RepertoireCore
           user_parent_role_ids = self.roles.map { |r| r.parent.id }
   
           entry_roles     = Role.entry_roles
-          stepwise_roles  = Role.all(:id.in => user_parent_role_ids)    # DM TODO.  why not self.parents ?
-        
-          (entry_roles | stepwise_roles) - (self.roles | self.roles_pending_review)
+          stepwise_roles  = Role.all(:id.in => user_parent_role_ids, :subscribable => true)    # DM TODO.  why not self.parents ?        
+          subscribable_roles = entry_roles | stepwise_roles
+          
+          subscribable_roles.delete_if { |r| self.has_role?(r) }
+          subscribable_roles - self.roles_pending_review
         end
       
 
         # Returns list of roles directly marked as grantable by this user
         #
+        # If another user is supplied, the result is pruned by their current and pending roles
+        #
         # Note: will not include roles this user can grant by implication
-        def grantable_roles
+        def grantable_roles(user = nil)
           role_ids = self.roles.map { |r| r.id }
-          Role.all(:granted_by_role_id.in => role_ids)    # DM TODO.  why not self.roles.grants  ?
+          grantable_roles = Role.all(:granted_by_role_id.in => role_ids)    # DM TODO.  why not self.roles.grants  ?
+          
+          unless user.nil?
+            grantable_roles.delete_if { |r| user.has_role?(r) }
+            grantable_roles -= user.roles_pending_review
+          end
+          
+          grantable_roles
         end      
         
         

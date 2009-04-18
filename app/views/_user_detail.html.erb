@@ -1,0 +1,11 @@
+<% # params:  user_detail, a single user model %>
+
+<div class="user_detail">
+<a class="picture" href="<%= slice_url(:repertoire_core, :user_memberships, :shortname => user_detail.shortname) %>"><img src="<%= gravatar_image_url(user_detail.email) %>"/></a>   
+<div class="stats">
+  <a href="<%= slice_url(:repertoire_core, :user_memberships, :shortname => user_detail.shortname) %>" class="name"><%= user_detail.first_name %> <%= user_detail.last_name%></a>
+  <div class="email"><%= user_detail.email %></div>
+  <div class="institution"><%= user_detail.institution %></div>
+</div>
+<div style="clear:both"></div>
+</div>

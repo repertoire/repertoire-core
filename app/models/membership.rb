@@ -72,13 +72,4 @@ class Membership
       self
     end
   end
-  
-  # Provide a list of related membership requests, as context for review decisions
-  #
-  # Specifically, returns all membership requests by the same user, for roles that encompass,
-  # equal, or are encompassed by this one.
-  def related_requests
-    related_roles = self.role.ancestors | self.role.self_and_descendants
-    related_roles.memberships(:user_id => self.user.id, :id.not => self.id)
-  end
 end

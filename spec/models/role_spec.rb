@@ -73,6 +73,20 @@ describe Role do
       Role[:manager].granted_by.should == Role[:admin]
       Role[:member].granted_by.should  == Role[:admin]
     end
+    
+    it "should allow grant to default a parent only if role declared in this block" do
+      Role.declare do
+        Role[:admin, "The admin"]
+        Role[:manager, "The manager"]                   # should still have undefined parent
+        Role[:admin].grants(:manager)
+      end
+    
+      Role[:admin].granted_by.should   be_nil
+      Role[:manager].granted_by.should == Role[:admin]
+    
+      Role[:admin].parent.should   be_nil
+      Role[:manager].parent.should == Role[:admin]
+    end
   
     it "should permit opening and closing role" do
       Role.declare do
@@ -147,12 +161,11 @@ describe Role do
       nicholas.has_role?(:admin).should be_true
     end
 
-    it "should allow roles to access granted_by and grants directly" do
+    it "should allow roles to access granted_by directly" do
       Role.declare do
         Role[:secretary].grants(:janitor)
       end
 
-      Role[:secretary].grants.should   include(Role[:janitor])
       Role[:janitor].granted_by.should == Role[:secretary]    
     end
 
@@ -206,7 +219,7 @@ describe Role do
       Membership.all.size.should == 1
     end
     
-    it "grants, subscriptions and reviews should return the relevant membership" do
+    it "should return the relevant membership on grants, subscriptions and reviews " do
       Role.declare do
         Role[:president].grants(:secretary)
         Role[:secretary].grants(:janitor)
@@ -218,6 +231,8 @@ describe Role do
       (request = suzy.subscribe(:janitor)).should_not be_reviewed
       jack.review(request, true).should be_approved
     end
+    
+    it "should grant automatically if the subscribing user could grant the role"
   end
 
   describe "granting inference rules" do      

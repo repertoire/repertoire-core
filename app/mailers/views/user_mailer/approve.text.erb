@@ -1,0 +1,9 @@
+Dear <%= @membership.user.full_name %>,
+
+Your request for privileges has been approved (<%= @membership.role.title || @membership.role.name %>).
+
+<%= ">> #{@membership.reviewer_note}" unless @membership.reviewer_note.blank? %>
+
+<%= @link %>
+
+We look forward to your continued participation and hope you will enjoy the experience.  Please contact us if you have any questions.

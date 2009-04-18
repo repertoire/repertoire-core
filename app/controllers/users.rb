@@ -1,42 +1,33 @@
 class RepertoireCore::Users < RepertoireCore::Application
     
-    #before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
-
-    #
-    # pending role membership review
-    #
+  include Merb::MembershipsHelper  
     
-    # TODO.  move this into separate controller, REST-style?
-    def requests(user_id)
-      @user                    = User.get(user_id)
-      @memberships             = @user.requests_to_review
-      
-      display @memberships
-    end
+    before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
 
     #
     # Profile page.
     #
   
     # User profile display - defers to edit form
-    def show(id)
-      @user = User.get(id)
+    def show(shortname)
+      @user = User.first(:shortname => shortname)
       raise NotFound unless @user
       display @user, :edit
     end
   
     # Show user profile page
-    def edit(id)
+    def edit(shortname)
       only_provides :html
-      @user = User.get(id)
+      @user = User.first(:shortname => shortname)
       raise NotFound unless @user
       display @user
     end
   
     # Updates user profile.  Not for password changes.
-    def update(id, user)
-      @user = User.get(id)
+    def update(shortname, user)
+      @user = User.first(:shortname => shortname)
       raise NotFound unless @user
+      raise Unauthorized unless @user == session.user        # only self can update profile
     
       user[:password] = user[:password_confirmation] = nil   # close security hole by disallowing password changes
     
@@ -188,14 +179,58 @@ class RepertoireCore::Users < RepertoireCore::Application
     #
   
     #
-    # Implementing a full admin UI for role memberships put off until we decide on usefulness of cross-project RBAC
+    # Pending role membership review
     #
+    
+    # TODO.  move this into separate controller, REST-style?
+    def requests(shortname)
+      @user                    = User.first(:shortname => shortname)
+      @memberships             = @user.requests_to_review
+      
+      raise Unauthorized unless @user == session.user
+      
+      display @memberships
+    end
+
+    #
+    # User search page
+    #
+      
+    def index(name=nil)
+      provides :html, :text
+      @name = name
+      @users = suggest_users(name)
+      display @users
+    end
+    
+    def complete_name(q)
+      # jquery.suggest legislates the use of 'q' param
+      @users = suggest_users(q)
+      names  = @users.map { |u| "#{u.first_name} #{u.last_name}"}
+      names.join("\n")                  # jquery.suggest requires text/plain, newline formatted
+    end
   
     #
     # Utility functions
     #
   
     protected
+    
+    # Suggest possible users based on a prefix, which can match last, first, or shortname.
+    # If no prefix provided, no search is made since there might be thousands of users
+    #
+    # On PostgreSQL, the match is case-insensitive
+    def suggest_users(prefix, options ={})
+      return [] if prefix.nil?
+      
+      query = case User.repository.adapter.uri.scheme
+        when 'postgres': "(first_name || ' ' || last_name) ILIKE ? OR shortname ILIKE ?"
+        else             "(first_name || ' ' || last_name) LIKE ? OR shortname LIKE ?"
+      end
+      
+      User.all({:conditions => [query, "%#{prefix}%", "#{prefix}%"],
+                :order => [:last_name, :first_name]}.merge(options))
+    end
 
     def deliver_email(action, to_user, params, send_params)
       from = Merb::Slices::config[:repertoire_core][:email_from]

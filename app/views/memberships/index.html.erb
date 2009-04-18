@@ -1,10 +1,46 @@
-<div class="core">
-<h3><%= @user.full_name %> - complete membership history</h3>
+<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery" %>
 
-<%= partial './memberships_table', :memberships => @memberships %>
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/rep.ajax-validate" %>
 
-<%= form_for @subscription_membership, :action => '/' do %>
-<%= partial './membership_form', :with => @subscription_membership %>
-<% end =%>
+<script language="javascript">
+  $(document).ready(function() {
+    $('#add_role li').hide();
+    $('#add_role .title').click(function() {
+	    $('#add_role li').toggle();
+	  });
+  });
+</script>
+
+<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership" %>
+
+<div class="core membership history">
+<div class="pageinfo">
+<%= partial './user_detail', :with => @user %>
+<%= navigation (session.user == @user) ? :history : :search %>
+<h3>Membership history</h3>
+</div>
+
+<%= partial './memberships_table', :memberships => @history %>
+
+<div style="clear:both"></div>
+
+<% if @add_roles.size > 0 %>
+  <ul id="add_role" class="<%= @add_mode %>">
+
+  <% case @add_mode %>	
+  <% when :subscribe %>
+  <div class="title">[+] Subscribe to a new role</div>
+  <% when :grant %>
+  <div class="title">[+] Grant a new role to this user</div>
+  <% end %>
+
+  <% @add_roles.sort.each do |role| %>
+  <li><a href="<%= slice_url(:repertoire_core, :new_user_membership, :shortname => @user.shortname, :role_name => role.name)%>"><%= role.title || role.name %></a></li>
+  <% end %>
+
+  </ul>
+<% end %>
+
+</div>
 
 </div>

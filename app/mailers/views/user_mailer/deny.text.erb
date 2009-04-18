@@ -1,0 +1,9 @@
+Dear <%= @membership.user.full_name %>,
+
+Your recent request for access has been denied for now ( <%= @membership.role.title || @membership.role.name %>).
+
+<%= ">> #{@membership.reviewer_note}" unless @membership.reviewer_note.blank? %>
+
+<%= @link %>
+
+We look forward to your continued participation.  Please contact us if you have any questions.

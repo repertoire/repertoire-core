@@ -2,10 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/core.css" %>
+    <% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/core" %>
     <%= include_required_css %>
     <%= include_required_js %>
-    <title>Repertoire Default Layout</title>
+    <title>MIT Hyperstudio</title>
   </head>
   <body class="core">
 	  <div id="container">
@@ -15,6 +15,8 @@
         </div>
         <div class="clear"></div>
       </div>
+        <%= tag :div, message[:error], :class => 'error' if message[:error] %>
+        <%= tag :div, message[:notice], :class => 'notice' if message[:notice] %>
       <div id="content"><%= catch_content :for_layout %></div>
     </div>
   </body>
