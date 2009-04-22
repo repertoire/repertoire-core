@@ -2,13 +2,15 @@ Installing Repertoire Core into your application gives you access to Hyperstudio
 
 To install Repertoire Core:
 
-# download and install the gem on your development workstation
+# download and install the gem in your app bundle
 git clone git@github.com:repertoire/repertoire-core.git
 cd repertoire-core
-sudo rake install
+rake gem
+cd ../yourapp
+gem install ../repertoire-core/pkg/repertoire_core-<version>.gem -i gems/
 
 # add the slice as a regular dependency for your application (dependencies.rb)
-dependency 'repertoire_core'
+dependency 'repertoire_core', 'version'
 
 # alter your router to mount the Repertoire Core slice
 Merb::Router.prepare do

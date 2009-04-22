@@ -389,3 +389,7 @@ workstation.
 A. The system must have internet access in order to send emails. (Not a
 problem on a production install, since the registration pages are only
 available via the internet).
+
+Q. I'm getting a "controller not found" exception when I try the default routes like signup!  What's going on?
+
+A. It's likely you've placed the router configuration underneath the default routes for your application.  In this case, the router will catch these here first--you just have to move your repertoire router rules up higher.
