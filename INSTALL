@@ -61,6 +61,18 @@ rake slices:repertoire_core:install
 
 # type rake audit:routes in your app for other relevant URLs
 
+PRODUCTION DEPLOYMENT
+
 # N.B. do not run rake slices:repertoire_core:install on a production environment!!  It uses DataMapper auto_migrate, which will 
 # immediately delete all of your users and roles.  Instead, use the task just once to set up the tables on the server, and thereafter
 # you can re-use the ones that are already there.
+
+# to ensure your project has access to the tables shared across all projects (users & roles),
+# you'll need to duplicate the effects of rake slices:repertoire_core:install's grants, but on the
+# production database:
+
+> psql -Upostgres hyperstudio_development -hmenzinga.mit.edu
+> GRANT ALL ON roles TO <project_abbr>; GRANT ALL ON roles_id_seq TO <project_abbr>;
+> GRANT ALL ON users TO <project_abbr>; GRANT ALL ON users_id_seq TO <project_abbr>;
+> GRANT ALL ON memberships TO <project_abbr>; GRANT ALL ON memberships_id_seq TO <project_abbr>;
+
