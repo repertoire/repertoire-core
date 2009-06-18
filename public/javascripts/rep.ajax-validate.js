@@ -60,7 +60,7 @@
       // initialize and setup submit button
       initialize($form, o);
       // install event handlers to validate single fields when they lose focus
-      $form.find('input').blur(function() {
+      $form.find(':input').blur(function() {
         // determine if field delegates to another and locate the feedback element
         var field = canonical_field($form, $(this), o);
         // remove existing feedback during server activity
@@ -91,7 +91,7 @@
   $.fn.ajaxValidate.defaults = {
     initialize:    false,                    /* validate all fields' initial values when form loads */
     feedback:      '~ .validate',            /* jquery selector for error feedback element, relative to the field it monitors */
-    disable:       'input[type=submit]',     /* Disable submit button until form validates: supply selector or false */
+    disable:       ':input[type=submit]',     /* Disable submit button until form validates: supply selector or false */
     type:          'POST',                   /* HTTP verb to use when calling web service */
     delegate:      {},                       /* delegate validation of one field to another */
     spinner:       'spinner'                 /* css class to add to feedback during ajax processing */
@@ -104,7 +104,7 @@
     validate_form($form, $form, opts, function(data) {
       set_disabled($form, data != true, opts);
       if (opts.initialize) {
-        $form.find('input').each(function() {
+        $form.find(':input').each(function() {
           var field = canonical_field($form, $(this), opts);
           set_feedback(field.$feedback, data[field.name], opts);
         });
@@ -135,7 +135,7 @@
     // handle fields whose validation delegates to another
     if (opts.delegate[field_name] != undefined) {
       field_name = opts.delegate[field_name];
-      $field     = $form.find('input[name="' + field_name +'"]');
+      $field     = $form.find(':input[name="' + field_name +'"]');
     }
     // determine element to display error feedback
     var $feedback_elem = $field.find(opts.feedback);

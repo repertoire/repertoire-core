@@ -31,7 +31,6 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb-auth-more', '>= 1.0.11')
   s.add_dependency('merb-auth-slice-password',    '>= 1.0.11')
   s.add_dependency('merb-helpers',   '>= 1.0.11')
-  s.add_dependency('merb-param-protection', '>= 1.0.11')
   s.add_dependency('merb-slices',    '>= 1.0.11')
   s.add_dependency('dm-core',        '>= 0.9.11')
   s.add_dependency('dm-constraints', '>= 0.9.11')
@@ -41,6 +40,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('dm-is-nested_set', '>= 0.9.11')
   s.add_dependency('dm-is-list',     '>= 0.9.11')
   s.add_dependency('whois',          '>= 0.4.2')  
+  s.add_dependency('tlsmail',        '>= 0.0.1')
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")

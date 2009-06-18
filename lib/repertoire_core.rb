@@ -11,7 +11,6 @@ if defined?(Merb::Plugins)
   require 'repertoire_core/mixins/user_authorization_mixin'
   require 'repertoire_core/mixins/user_mixin'
   require 'repertoire_core/mixins/dm/resource_mixin'
-  require 'repertoire_core/smtp_tls'
   
   dependency 'merb-slices', :immediate => true
   Merb::Plugins.add_rakefiles "repertoire_core/merbtasks", "repertoire_core/slicetasks", "repertoire_core/spectasks"
@@ -41,21 +40,31 @@ if defined?(Merb::Plugins)
     # Stub classes loaded hook - runs before LoadClasses BootLoader
     # right after a slice's classes have been loaded internally.
     def self.loaded
-      
+    
       # Repertoire defaults for mailer... redeclare in your project if necessary
-      Merb::Mailer.config = {
-        :host   => 'smtp.gmail.com',
-        :port   => '587',
-        :user   => 'repertoire.hyperstudio',
-        :pass   => '77MassAve',
-        :auth   => :plain
-      }
-
+      
+      # First default (standard): sendmail
+      Merb::Mailer.config = {:sendmail_path => '/usr/sbin/sendmail'}
+      Merb::Mailer.delivery_method = :sendmail
+      
+      # Other options - SMTP vis SSH/TLS to either GMAIL or MIT email
+      
+      # Activate SSL Support
+      # Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
+      
+      # Merb::Mailer.config = {
+      #   :host   => 'smtp.gmail.com',
+      #   :port   => '587',
+      #   :user   => 'repertoire.hyperstudio',
+      #   :pass   => '77MassAve',
+      #   :auth   => :plain
+      # }
+      
       #Merb::Mailer.config = {
       #  :host   => 'outgoing.mit.edu',
       #  :port   => '587',
-      #  :user   => 'repertoire',
-      #  :pass   => '16-635',
+      #  :user   => '<your kerberos id>',
+      #  :pass   => '<your password>',
       #  :auth   => :plain,
       #  :domain => 'scrubbing-bubbles.mit.edu'
       #}
@@ -146,7 +155,6 @@ if defined?(Merb::Plugins)
   dependency 'merb-auth-more'
   dependency 'merb-auth-slice-password'
   dependency 'merb-helpers'
-  dependency 'merb-param-protection'
 
   dependency 'dm-core'
   # dependency 'dm-constraints'    # in datamapper 0.9.10+, dm-constraints is broken 
@@ -158,4 +166,5 @@ if defined?(Merb::Plugins)
   dependency 'dm-is-list'
   
   dependency 'whois'
+  dependency 'tlsmail'
 end

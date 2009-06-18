@@ -2,8 +2,10 @@ class RepertoireCore::Users < RepertoireCore::Application
     
   include Merb::MembershipsHelper  
     
-    before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
-
+  before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
+  
+  log_params_filtered 'user[email]'
+  
     #
     # Profile page.
     #
@@ -236,5 +238,16 @@ class RepertoireCore::Users < RepertoireCore::Application
       from = Merb::Slices::config[:repertoire_core][:email_from]
       RepertoireCore::UserMailer.dispatch_and_deliver(action, params.merge(:from => from, :to => to_user.email), 
                                                       send_params)
+    end
+    
+    # Remove password and password_confirmation from the server logs.
+    #  TODO.  find more elegant way of doing this
+    #         can be removed as soon as merb-param-protection allows for testing params like :user => [:password]
+    def self._filter_params(params)
+      result = params.dup
+      result[:current_password] =             '[FILTERED]' if result[:current_password]
+      result[:user][:password] =              '[FILTERED]' if result[:user] && result[:user][:password]
+      result[:user][:password_confirmation] = '[FILTERED]' if result[:user] && result[:user][:password_confirmation]
+      result
     end
   end
