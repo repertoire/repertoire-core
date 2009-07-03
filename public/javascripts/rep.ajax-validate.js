@@ -5,6 +5,7 @@
 * 
 * Copyright (c) 2009 MIT Hyperstudio
 * Christopher York, 03/2009
+* Revised 06/2009
 */
 
 (function($) {
@@ -43,12 +44,17 @@
   //   <div>Email:<input type="text" name="user[email]"/><div class='validate'/></div>
   //   <div>Password:<input type="password" name="user[password]"/><div class='validate'/></div>
   //   <div>Confirm:<input type="password" name="user[confirm_password]"/><div class='validate'/></div>
-  //   <input type="submit"/>
+  //   <div style="clear:both"><input type="submit"/></div>
   // </form>
   //
   // Your validation web service should return JSON keyed to the text fields' name attributes:
   //
   // { 'user[email]': [ 'Email has already been taken by another user', 'Email must be in mit.edu domain' ], ... }
+  //
+  // One special case to ease usability: When the user hovers over the submit button in preparation to submit, the
+  //    validator runs if the input is disabled.  This handles a common case where the user has filled the final field
+  //    but not moved cursor focus.  Disabling is done via javascript rather than html, since some browsers swallow
+  //    all events for disabled inputs.
   // 
   $.fn.ajaxValidate = function($$options) {
     // plugin defaults + options
@@ -58,7 +64,7 @@
       // element specific options
       var o = $.meta ? $.extend({}, $settings, $form.data()) : $settings;
       // initialize and setup submit button
-      initialize($form, o);
+      initialize($form, o, false);
       // install event handlers to validate single fields when they lose focus
       $form.find(':input').blur(function() {
         // determine if field delegates to another and locate the feedback element
@@ -67,10 +73,33 @@
         field.$feedback.empty();
         // core operation: submit form via ajax and update field feedback with formatted errors
         validate_form($form, field.$feedback, o, function(data) {
+          disabled = data !== true
     	    set_disabled($form, data !== true, o);
       	  set_feedback(field.$feedback, data[field.name], o);
         });
       });
+      
+      // handle disabling form and submit button
+      if (o.disable) {
+        var $submit = $form.find(o.disable);
+        
+        // only allow submit if button not disabled
+        $form.submit(function() {
+          var disabled = $submit.hasClass('disabled');
+          var $validate = $form.find('.validate');
+          if (disabled) {
+            $validate.fadeOut(function() { $validate.fadeIn() });
+          }
+          return !disabled;
+        });
+        
+        // validate entire form when user hovers on disabled button
+        $submit.mouseover(function() {
+          if ($submit.hasClass('disabled')) {
+            initialize($form, o, true);
+          }
+        });
+      };      
     });
   };
 
@@ -94,16 +123,16 @@
     disable:       ':input[type=submit]',     /* Disable submit button until form validates: supply selector or false */
     type:          'POST',                   /* HTTP verb to use when calling web service */
     delegate:      {},                       /* delegate validation of one field to another */
-    spinner:       'spinner'                 /* css class to add to feedback during ajax processing */
+    spinner:       'spinner',                /* css class to add to feedback during ajax processing */
   };
 
   // internal helper functions
   
   // pre-flight validation for all fields
-  function initialize($form, opts) {
+  function initialize($form, opts, force) {
     validate_form($form, $form, opts, function(data) {
       set_disabled($form, data != true, opts);
-      if (opts.initialize) {
+      if (opts.initialize || force) {
         $form.find(':input').each(function() {
           var field = canonical_field($form, $(this), opts);
           set_feedback(field.$feedback, data[field.name], opts);
@@ -146,7 +175,8 @@
   function set_disabled($form, status, opts) {
     // enable/disable submit button, if option selected
     if (opts.disable) {
-      $form.find(opts.disable).attr('disabled', status);
+      if (status) $form.find(opts.disable).addClass('disabled');
+      else $form.find(opts.disable).removeClass('disabled');
     }
   }
 

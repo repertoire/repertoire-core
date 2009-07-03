@@ -23,7 +23,7 @@
       <div><label for="date">Date</label><div id="date" class="value"><%= @membership.created_at.formatted(:long) %></div></div>
       <div><label for="user_note">User Note</label><div id="user_note" class="value"><%= @membership.user_note %></div></div>
       <div><label for="reviewer_note">Reviewer Note</label><div id="reviewer_note"><%= text_area :reviewer_note, :rows => 8, :cols => 60  %></div></div>
-      <div id="submit_buttons"><%= submit 'Approve', :value => 'approve' %><%= submit 'Deny', :value => 'deny' %></div>
+      <div> id="submit_buttons"><%= submit 'Approve', :value => 'approve' %><%= submit 'Deny', :value => 'deny' %></div>
     <% end =%>
   </fieldset>
   <div style="clear:both"></div>

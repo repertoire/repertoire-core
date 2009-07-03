@@ -30,7 +30,7 @@
   <div><label for="role">Role</label><div id="role" class="value"><%= @role.title || @role.name %></div></div>
   <div><label for="date">Date</label><div id="date" class="value"><%= Time.now.formatted(:long) %></div></div>
   <div><label for="user_note">Note</label><div id="user_note"><%= text_area :name => :note, :rows => 8, :cols => 60  %></div></div>
-  <div><%= submit "Subscribe" %></div>
+  <div>><%= submit "Subscribe" %></div>
 <% end =%>
 </fieldset>
 <div style="clear:both"></div>

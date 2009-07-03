@@ -9,7 +9,7 @@ AUTHOR = "Christopher York"
 EMAIL = "yorkc@mit.edu"
 HOMEPAGE = "http://hyperstudio.mit.edu/repertoire"
 SUMMARY = "RepertoireCore provides registration and role based authorization to Repertoire projects"
-GEM_VERSION = "0.3.2"
+GEM_VERSION = "0.3.3"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'

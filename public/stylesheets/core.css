@@ -16,10 +16,10 @@
 .core textarea            { float: left; clear: both;}
 .core .institution,
 .core .byline             { float: left; clear: both; color: gray; }
-.core #submit             { margin-top: 8px; margin-bottom: 8px; }
+.core #submit_buttons { margin-top: 8px; margin-bottom: 8px; }
 
-.core #edit_user #roles   { float: right; clear: right; list-style-type: none; border: 0; margin: 0; padding: 0; color: gray;}
-.core form                { float:left; clear: left;}
+.core #edit_user #roles   { float: right; clear: right; list-style-type: none; border: 0; margin: 0; padding: 0; color: gray; }
+.core form                { float:left; clear: left; }
 
 .core                     { font-family: arial; font-size: 10pt; }
 .core a:link img, .core a:active img, .core a:visited img, .core a:hover img { display: block; border: 0; padding: 0; margin: 0; }

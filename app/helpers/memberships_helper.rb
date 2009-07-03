@@ -2,7 +2,7 @@ module Merb
   module MembershipsHelper
 
     def navigation(current = nil)
-      can_grant = !session.user.grantable_roles.empty?
+      can_grant = session.user && !session.user.grantable_roles.empty?
       
       tag :div, :class => 'navigation' do
         links = []

@@ -15,7 +15,7 @@
   <%= error_messages_for session.authentication, :header => "" %>
   <div><label for="email">Email</label><input tabindex="1" type="text" name="email" value="<%= default_email %>" id="email"></div>
   <div><label for="password">Password</label><input tabindex="2" type="password" name="password" value="" id="password"></div>
-  <div><input class="submit" type="submit" name="submit" value="Log in" id="submit"></div>
+  <div>><input class="submit" type="submit" name="submit" value="Log in"></div>
 	<div><a href="<%= slice_url(:repertoire_core, :signup) %>">New user? Request an account.</a></div>
 	<div><a href="<%= slice_url(:repertoire_core, :forgot_password) %>">Forgot your password?</a></div>
 </form>
