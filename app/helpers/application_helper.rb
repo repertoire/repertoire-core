@@ -4,10 +4,9 @@ module Merb
 
       # @return a url to identify the given user's profile photo
       def gravatar_image_url(email, size=40)
-        default_gravatar_uri = request.protocol + request.host + public_path_for('gravatar.png')
-        default_gravatar_uri = URI.escape(default_gravatar_uri, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        default_gravatar_uri = request.protocol + '://' request.host + public_path_for('gravatar.png')
+        return default_gravatar_uri if email.nil?
         
-        return defualt_gravatar_uri if email.nil?
         email_md5 = Digest::MD5.hexdigest(email)
         encoded_uri = URI.escape(default_gravatar_uri, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
         "http://www.gravatar.com/avatar.php?gravatar_id=#{email_md5}&default=#{encoded_uri}&size=#{size}" 

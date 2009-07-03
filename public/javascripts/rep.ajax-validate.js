@@ -95,9 +95,7 @@
         
         // validate entire form when user hovers on disabled button
         $submit.mouseover(function() {
-          if ($submit.hasClass('disabled')) {
-            initialize($form, o, true);
-          }
+          initialize($form, o, true);
         });
       };      
     });
