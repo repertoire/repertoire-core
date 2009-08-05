@@ -45,9 +45,6 @@ namespace :slices do
         
           Merb.logger.info "Migrating Repertoire Core models into #{core_uri.inspect}"
           core_models.each do |m| 
-
-            # raise "ALTER TABLE #{m.storage_name} OWNER TO #{core_uri[:user]}, ALTER SEQUENCE #{m.storage_name}_id_seq OWNED BY #{m.storage_name}.id, GRANT ALL ON #{m.storage_name} TO #{project}, GRANT ALL ON #{m.storage_name}_id_seq TO #{project}".inspect
-
             m.auto_migrate!
             [ "ALTER TABLE #{m.storage_name} OWNER TO #{core_uri[:user]}",
               "ALTER SEQUENCE #{m.storage_name}_id_seq OWNED BY #{m.storage_name}.id",
