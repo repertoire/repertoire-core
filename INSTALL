@@ -50,6 +50,7 @@ rake:
       adapter:  postgresql
       database: hyperstudio_development
       username: postgres
+      user: postgres  # THIS SHOULD BE A TEMPORARY FIX--THERE IS AN INCONSISTENCY IN THE TERMINOLOGY BETWEEN DATAMAPPER AND MERB FOR THE NEW VERSION SO BOTH 'username' AND 'user' ARE NEEDED FOR NOW.
       password: 
       host:     localhost
 
