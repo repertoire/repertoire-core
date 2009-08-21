@@ -239,15 +239,23 @@ class RepertoireCore::Users < RepertoireCore::Application
       RepertoireCore::UserMailer.dispatch_and_deliver(action, params.merge(:from => from, :to => to_user.email), 
                                                       send_params)
     end
-    
+        
     # Remove password and password_confirmation from the server logs.
     #  TODO.  find more elegant way of doing this
     #         can be removed as soon as merb-param-protection allows for testing params like :user => [:password]
-    def self._filter_params(params)
-      result = params.dup
-      result[:current_password] =             '[FILTERED]' if result[:current_password]
-      result[:user][:password] =              '[FILTERED]' if result[:user] && result[:user][:password]
-      result[:user][:password_confirmation] = '[FILTERED]' if result[:user] && result[:user][:password_confirmation]
-      result
-    end
+    #
+    # CY 8/2009.  After Merb release 1.0.10, it appears even this approach to filtering passwords from server logs
+    #             doesn't work (param processing flow has changed so both this and merb-param-protection now
+    #             to clobber the real password and password_confirmation params)
+    #
+    # This issue is documented at https://merb.lighthouseapp.com/projects/7433/tickets/1046-password-filtering-bug
+    #
+    #def self._filter_params(params)
+    #  result = params.dup
+    #  result[:current_password] =             '[FILTERED]' if result[:current_password]
+    #  result[:user][:password] =              '[FILTERED]' if result[:user] && result[:user][:password]
+    #  result[:user][:password_confirmation] = '[FILTERED]' if result[:user] && result[:user][:password_confirmation]
+    #  result
+    #end
+
   end
