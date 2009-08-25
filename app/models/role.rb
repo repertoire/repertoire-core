@@ -178,7 +178,7 @@ class Role
     def self_and_descendants(*roles)
       spans = roles.map{ |r| (r.lft)..(r.rgt) }
       spans = spans.map{ |s| s.to_a }.flatten.uniq
-      Role.all(:lft.in => spans)
+      Role.all(:lft => spans)  # ".in" syntax is gone.
     end
     
     # Loads a set of roles from a mix of symbols and role objects
@@ -189,11 +189,11 @@ class Role
     def to_roles(*roles)
       # load a series of mixed roles and symbols
       role_names = roles.find_all { |r| r.is_a?(Symbol) }
-      load_roles = Role.all(:name.in => role_names)
+      role_name_strings = role_names.map { |r| r.to_s } # Because evidently we can no longer send Symbols to Datamapper query methods as of 0.10.0.
+      load_roles = Role.all(:name => role_name_strings) # ...and, ".in" syntax is gone.
       raise "Unable to locate all roles in [#{ role_names.join(' ')}]" unless load_roles.size == role_names.size
       (roles - role_names) | load_roles
     end
-    
     
     # Returns a list of the entry-level roles: subscribable roles without children
     #

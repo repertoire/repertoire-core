@@ -42,7 +42,7 @@ module RepertoireCore
             role             = Role[role_name]
             related_roles    = role.ancestors | role.self_and_descendants
             related_role_ids = related_roles.map { |r| r.id }        # DM TODO.  related_roles.memberships ...
-           self.memberships.all(:user_id => self.id, :role_id.in => related_role_ids)
+           self.memberships.all(:user_id => self.id, :role_id => related_role_ids)
           end
         end
 
@@ -129,7 +129,7 @@ module RepertoireCore
         def requests_to_review
           roles = Role.to_roles(*self.implied_grantable_roles)
           role_ids = roles.map { |r| r.id }            # DM TODO.  why not role.memberships?
-          Membership.all(:role_id.in => role_ids, :reviewer_id => nil, :order => [:created_at])
+          Membership.all(:role_id => role_ids, :reviewer_id => nil, :order => [:created_at])
         end
 
         # Returns true if user has permissions to grant all the given roles, whether directly or
@@ -158,7 +158,7 @@ module RepertoireCore
           user_parent_role_ids = self.roles.map { |r| r.parent.id }
   
           entry_roles     = Role.entry_roles
-          stepwise_roles  = Role.all(:id.in => user_parent_role_ids, :subscribable => true)    # DM TODO.  why not self.parents ?        
+          stepwise_roles  = Role.all(:id => user_parent_role_ids, :subscribable => true)    # DM TODO.  why not self.parents ?
           subscribable_roles = entry_roles | stepwise_roles
           
           subscribable_roles.delete_if { |r| self.has_role?(r) }
@@ -173,7 +173,7 @@ module RepertoireCore
         # Note: will not include roles this user can grant by implication
         def grantable_roles(user = nil)
           role_ids = self.roles.map { |r| r.id }
-          grantable_roles = Role.all(:granted_by_role_id.in => role_ids)    # DM TODO.  why not self.roles.grants  ?
+          grantable_roles = Role.all(:granted_by_role_id => role_ids)    # DM TODO.  why not self.roles.grants  ?
           
           unless user.nil?
             grantable_roles.delete_if { |r| user.has_role?(r) }
@@ -190,7 +190,7 @@ module RepertoireCore
         def implied_grantable_roles
           implied_roles           = Role.self_and_descendants(*self.roles)
           implied_role_ids        = implied_roles.map { |r| r.id }
-          implied_grantable_roles = Role.all(:granted_by_role_id.in => implied_role_ids)    # DM TODO.  why not implied_roles.grants ?
+          implied_grantable_roles = Role.all(:granted_by_role_id => implied_role_ids)    # DM TODO.  why not implied_roles.grants ?
         end
       
         #

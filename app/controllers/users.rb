@@ -224,8 +224,10 @@ class RepertoireCore::Users < RepertoireCore::Application
     # On PostgreSQL, the match is case-insensitive
     def suggest_users(prefix, options ={})
       return [] if prefix.nil?
+
+      # raise User.repository.adapter.options[:adapter].inspect
       
-      query = case User.repository.adapter.uri.scheme
+      query = case User.repository.adapter.options[:adapter]
         when 'postgres': "(first_name || ' ' || last_name) ILIKE ? OR shortname ILIKE ?"
         else             "(first_name || ' ' || last_name) LIKE ? OR shortname LIKE ?"
       end
