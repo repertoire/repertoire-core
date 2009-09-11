@@ -51,7 +51,7 @@ module RepertoireCore
 
         # Returns false if the user has registered but not activated
         def activated?
-         return false if self.new_record?
+         return false if self.new?
          !! activation_code.nil?
         end
 

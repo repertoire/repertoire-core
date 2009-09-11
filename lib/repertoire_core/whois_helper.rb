@@ -8,7 +8,11 @@ module RepertoireCore
     def lookup!(user)
       begin 
         domain = user.email.match(/@(.*)$/)[1].downcase
-        result = Whois::Whois.new(domain).search_whois
+        
+        client = Whois::Client.new
+        client.timeout = 3
+        result = client.query(domain)
+        
         props = whois_to_hash(result)
       
         user.institution      = props['OrgName']

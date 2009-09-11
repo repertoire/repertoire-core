@@ -4,10 +4,8 @@ class RepertoireCore::Users < RepertoireCore::Application
     
   before :ensure_authenticated, :exclude => [:new, :validate_user, :create, :activate, :forgot_password, :password_reset_key, :reset_password ]
   
-  log_params_filtered 'user[email]'
-  
     #
-    # Profile page.
+    # Profile page
     #
   
     # User profile display - defers to edit form
@@ -33,7 +31,7 @@ class RepertoireCore::Users < RepertoireCore::Application
     
       user[:password] = user[:password_confirmation] = nil   # close security hole by disallowing password changes
     
-      if @user.update_attributes(user)
+      if @user.update(user)
         redirect '/', :message => { :notice => "Updated your account." }
       else
         display @user, :edit

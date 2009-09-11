@@ -1,7 +1,7 @@
 class Membership
   include DataMapper::Resource
 
-  property :id,                         Integer, :serial   => true
+  property :id,                         Serial
 
   # user's subscription request
   belongs_to :user
@@ -9,7 +9,7 @@ class Membership
   property   :user_note,                Text
 
   # reviewer's decision
-  belongs_to :reviewer, :class_name => 'User', :child_key => [:reviewer_id]
+  belongs_to :reviewer, :class_name => 'User', :child_key => [:reviewer_id], :nullable => true
   property :reviewer_note,              Text  
   property :approved_at,                DateTime
   
@@ -18,7 +18,7 @@ class Membership
   property :updated_at,                 DateTime
   
   # for cases where membership is open, approve automatically
-  before :save do
+  before :valid? do
     self.attempt_review(user, true) unless reviewed?
   end
   

@@ -11,7 +11,7 @@ class Role
   has n, :memberships
   
   # granting and subscription control
-  belongs_to :granted_by, :class_name => self.name, :child_key => [:granted_by_role_id], :order => [:lft.asc]
+  belongs_to :granted_by, :class_name => self.name, :child_key => [:granted_by_role_id], :order => [:lft.asc], :nullable => true
   property   :subscribable,             Boolean, :nullable => false, :default => false
   
   # administrative
@@ -110,7 +110,7 @@ class Role
           request.reviewer_note = message
         end
         
-        request.save!
+        request.save
         request.reload
       end
       
@@ -136,7 +136,7 @@ class Role
         role = Role.first_or_create(:name => name)
         if title && title != role.title
           role.title = title
-          role.save!
+          role.save
         end
         @declarator.state = role
         @declarator
@@ -178,7 +178,8 @@ class Role
     def self_and_descendants(*roles)
       spans = roles.map{ |r| (r.lft)..(r.rgt) }
       spans = spans.map{ |s| s.to_a }.flatten.uniq
-      Role.all(:lft => spans)  # ".in" syntax is gone.
+      
+      Role.all(:lft => spans)
     end
     
     # Loads a set of roles from a mix of symbols and role objects
@@ -223,7 +224,7 @@ class Role
       others.each do |name|
         r = Role.first_or_create(:name => name)
         r.parent = self.state
-        r.save!
+        r.save
       end
       self.state = Role.first(:name => others.last)
       self
@@ -243,10 +244,10 @@ class Role
       others.each do |name|
         r = Role.first_or_create(:name => name)
         r.granted_by = self.state
-        r.parent     = self.state if r.parent_id == 1         
-        # subtle workaround: dm-is-nested set sets parent_id automatically to root.  
+        r.parent     = self.state if r.parent_id == 1
+        # subtle workaround: dm-is-nested sets parent_id automatically to root.  
         # parent_id will be 1 (root) if this is a new record.  so set it together with grant
-        r.save!
+        r.save
       end
       self.state = Role.first(:name => others.last)
       self
@@ -262,7 +263,7 @@ class Role
     #   end  
     def open
       self.state.subscribable = true
-      self.state.save!
+      self.state.save
       self
     end
     
@@ -277,7 +278,7 @@ class Role
     def close
       self.state.subscribable = false
       self.state.granted_by   = nil
-      self.state.save!
+      self.state.save
       self
     end
   end

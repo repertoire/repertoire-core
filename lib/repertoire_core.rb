@@ -149,22 +149,26 @@ if defined?(Merb::Plugins)
   
   # Add dependencies for other RepertoireCore classes below.
   # Don't forget to copy this list to the Rakefile!
-  dependency 'merb-mailer'
-  dependency 'merb-assets'
-  dependency 'merb-auth-core'
-  dependency 'merb-auth-more'
-  dependency 'merb-auth-slice-password'
-  dependency 'merb-helpers'
-
-  dependency 'dm-core'
-  # dependency 'dm-constraints'    # in datamapper 0.9.10+, dm-constraints is broken 
-  dependency 'dm-validations'
-  dependency 'dm-timestamps'
-  dependency 'dm-aggregates'
-
-  dependency 'dm-is-nested_set'
-  dependency 'dm-is-list'
+  merb_gems_version = ">=1.1"
+  dm_gems_version   = ">=0.10"
+  do_gems_version   = ">=0.10"
   
-  dependency 'whois'
-  dependency 'tlsmail'
+  dependency 'merb-mailer', merb_gems_version
+  dependency 'merb-assets', merb_gems_version
+  dependency 'merb-auth-core', merb_gems_version
+  dependency 'merb-auth-more', merb_gems_version
+  dependency 'merb-auth-slice-password', merb_gems_version
+  dependency 'merb-helpers', merb_gems_version
+
+  dependency 'dm-core', dm_gems_version
+  # dependency 'dm-constraints', dm_gems_version    # in datamapper 0.9.10+, dm-constraints is broken 
+  dependency 'dm-validations', dm_gems_version
+  dependency 'dm-timestamps', dm_gems_version
+  dependency 'dm-aggregates', dm_gems_version
+
+  dependency 'dm-is-nested_set', dm_gems_version
+  dependency 'dm-is-list', dm_gems_version
+  
+  dependency 'whois', '>=0.5.2'
+  dependency 'tlsmail', '>=0.0.1'
 end
