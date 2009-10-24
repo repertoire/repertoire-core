@@ -39,8 +39,8 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('dm-aggregates',  '>= 0.9.11')
   s.add_dependency('dm-is-nested_set', '>= 0.9.11')
   s.add_dependency('dm-is-list',     '>= 0.9.11')
-  s.add_dependency('whois',          '>= 0.4.2')  
-  s.add_dependency('tlsmail',        '>= 0.0.1')
+  s.add_dependency('whois',          '= 0.5.2')  
+  s.add_dependency('tlsmail',        '= 0.0.1')
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")

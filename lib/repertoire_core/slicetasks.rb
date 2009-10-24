@@ -25,15 +25,15 @@ namespace :slices do
       #        model tables and granting access to the project
       default_uri = DataMapper.repository(:default).adapter.options
       core_uri    = DataMapper.repository(:core).adapter.options
-      project     = default_uri[:user]
+      project     = default_uri[:username]
       
       Merb.logger.info "Detected your Hyperstudio project abbreviation is '#{project}'"
 
       # error check database configuration
       case
       when default_uri[:path] != core_uri[:path] then raise "Repertoire and project-level tables should be in the same database"
-      when default_uri[:user] == 'postgres'    then raise "Project-level tables should have their own schema and user for access"
-      when default_uri[:user] == core_uri[:user] then raise "Repertoire core tables should not be stored in the project-level database schema"
+      when default_uri[:username] == 'postgres'    then raise "Project-level tables should have their own schema and user for access"
+      when default_uri[:username] == core_uri[:username] then raise "Repertoire core tables should not be stored in the project-level database schema"
       end
 
       # create repertoire tables transactionally in the public schema      
@@ -46,7 +46,7 @@ namespace :slices do
           Merb.logger.info "Migrating Repertoire Core models into #{core_uri.inspect}"
           core_models.each do |m| 
             m.auto_migrate!
-            [ "ALTER TABLE #{m.storage_name} OWNER TO #{core_uri[:user]}",
+            [ "ALTER TABLE #{m.storage_name} OWNER TO #{core_uri[:username]}",
               "ALTER SEQUENCE #{m.storage_name}_id_seq OWNED BY #{m.storage_name}.id",
               "GRANT ALL ON #{m.storage_name} TO #{project}",
               "GRANT ALL ON #{m.storage_name}_id_seq TO #{project}" ].each { |stmt| repository(:core).adapter.execute(stmt) }

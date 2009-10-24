@@ -12,7 +12,7 @@ if defined?(Merb::Plugins)
   require 'repertoire_core/mixins/user_mixin'
   require 'repertoire_core/mixins/dm/resource_mixin'
   
-  dependency 'merb-slices', :immediate => true
+  # dependency 'merb-slices', :immediate => true
   Merb::Plugins.add_rakefiles "repertoire_core/merbtasks", "repertoire_core/slicetasks", "repertoire_core/spectasks"
 
   # Register the Slice for the current host application
@@ -146,29 +146,31 @@ if defined?(Merb::Plugins)
   #
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   RepertoireCore.setup_default_structure!
+
+  # CWY 10/24/2009.  Dependencies are redundant using new bundler... see the rakefile/gemspec
   
   # Add dependencies for other RepertoireCore classes below.
   # Don't forget to copy this list to the Rakefile!
-  merb_gems_version = ">=1.1"
-  dm_gems_version   = ">=0.10"
-  do_gems_version   = ">=0.10"
+  #merb_gems_version = ">=1.1"
+  #dm_gems_version   = ">=0.10"
+  #do_gems_version   = ">=0.10"
   
-  dependency 'merb-mailer', merb_gems_version
-  dependency 'merb-assets', merb_gems_version
-  dependency 'merb-auth-core', merb_gems_version
-  dependency 'merb-auth-more', merb_gems_version
-  dependency 'merb-auth-slice-password', merb_gems_version
-  dependency 'merb-helpers', merb_gems_version
+  #dependency 'merb-mailer', merb_gems_version
+  #dependency 'merb-assets', merb_gems_version
+  #dependency 'merb-auth-core', merb_gems_version
+  #dependency 'merb-auth-more', merb_gems_version
+  #dependency 'merb-auth-slice-password', merb_gems_version
+  #dependency 'merb-helpers', merb_gems_version
 
-  dependency 'dm-core', dm_gems_version
+  #dependency 'dm-core', dm_gems_version
   # dependency 'dm-constraints', dm_gems_version    # in datamapper 0.9.10+, dm-constraints is broken 
-  dependency 'dm-validations', dm_gems_version
-  dependency 'dm-timestamps', dm_gems_version
-  dependency 'dm-aggregates', dm_gems_version
+  #dependency 'dm-validations', dm_gems_version
+  #dependency 'dm-timestamps', dm_gems_version
+  #dependency 'dm-aggregates', dm_gems_version
 
-  dependency 'dm-is-nested_set', dm_gems_version
-  dependency 'dm-is-list', dm_gems_version
+  #dependency 'dm-is-nested_set', dm_gems_version
+  #dependency 'dm-is-list', dm_gems_version
   
-  dependency 'whois', '>=0.5.2'
-  dependency 'tlsmail', '>=0.0.1'
+  #dependency 'whois', '>=0.5.2'
+  #dependency 'tlsmail', '>=0.0.1'
 end

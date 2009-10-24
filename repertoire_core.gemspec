@@ -37,8 +37,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<dm-aggregates>, [">= 0.9.11"])
       s.add_runtime_dependency(%q<dm-is-nested_set>, [">= 0.9.11"])
       s.add_runtime_dependency(%q<dm-is-list>, [">= 0.9.11"])
-      s.add_runtime_dependency(%q<whois>, [">= 0.4.2"])
-      s.add_runtime_dependency(%q<tlsmail>, [">= 0.0.1"])
+      s.add_runtime_dependency(%q<whois>, ["= 0.5.2"])
+      s.add_runtime_dependency(%q<tlsmail>, ["= 0.0.1"])
     else
       s.add_dependency(%q<merb-mailer>, [">= 1.1"])
       s.add_dependency(%q<merb-assets>, [">= 1.1"])
@@ -55,8 +55,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<dm-aggregates>, [">= 0.9.11"])
       s.add_dependency(%q<dm-is-nested_set>, [">= 0.9.11"])
       s.add_dependency(%q<dm-is-list>, [">= 0.9.11"])
-      s.add_dependency(%q<whois>, [">= 0.4.2"])
-      s.add_dependency(%q<tlsmail>, [">= 0.0.1"])
+      s.add_dependency(%q<whois>, ["= 0.5.2"])
+      s.add_dependency(%q<tlsmail>, ["= 0.0.1"])
     end
   else
     s.add_dependency(%q<merb-mailer>, [">= 1.1"])
@@ -74,7 +74,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<dm-aggregates>, [">= 0.9.11"])
     s.add_dependency(%q<dm-is-nested_set>, [">= 0.9.11"])
     s.add_dependency(%q<dm-is-list>, [">= 0.9.11"])
-    s.add_dependency(%q<whois>, [">= 0.4.2"])
-    s.add_dependency(%q<tlsmail>, [">= 0.0.1"])
+    s.add_dependency(%q<whois>, ["= 0.5.2"])
+    s.add_dependency(%q<tlsmail>, ["= 0.0.1"])
   end
 end
