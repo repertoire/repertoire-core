@@ -1,3 +1,5 @@
+require 'uri'
+
 module Merb
   module RepertoireCore
     module ApplicationHelper
