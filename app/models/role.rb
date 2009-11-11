@@ -11,7 +11,7 @@ class Role
   has n, :memberships
   
   # granting and subscription control
-  belongs_to :granted_by, :class_name => self.name, :child_key => [:granted_by_role_id], :order => [:lft.asc], :nullable => true
+  belongs_to :granted_by, :model => 'Role', :child_key => [:granted_by_role_id], :order => [:lft.asc], :nullable => true
   property   :subscribable,             Boolean, :nullable => false, :default => false
   
   # administrative

@@ -32,7 +32,7 @@ class RepertoireCore::Users < RepertoireCore::Application
       user[:password] = user[:password_confirmation] = nil   # close security hole by disallowing password changes
     
       if @user.update(user)
-        redirect '/', :message => { :notice => "Updated your account." }
+        redirect root_url, :message => { :notice => "Updated your account." }
       else
         display @user, :edit
       end
@@ -72,8 +72,8 @@ class RepertoireCore::Users < RepertoireCore::Application
         @user.reload
         deliver_email(:signup, @user, {:subject => "Please Activate Your Account"}, 
                                       {:user => @user,
-                                       :link => absolute_url(:activate, :activation_code => @user.activation_code) }) 
-        redirect '/', :message => { :notice => "Created your account.  Please check your email." }
+                                       :link => absolute_slice_url(:repertoire_core, :activate, :activation_code => @user.activation_code) }) 
+        redirect root_url, :message => { :notice => "Created your account.  Please check your email." }
       else
         message[:error] = "User could not be created"
         render :new
@@ -91,11 +91,11 @@ class RepertoireCore::Users < RepertoireCore::Application
           session.user.activate
           deliver_email(:activation, session.user, {:subject => "Welcome"},
                                                    {:user => session.user,
-                                                    :link => absolute_url(:login, :email => session.user.email)})
+                                                    :link => absolute_slice_url(:merb_auth_slice_password, :login, :email => session.user.email)})
         end
       end
     
-      redirect '/', :message => { :notice => "Your account has been activated.  Welcome to Repertoire." }
+      redirect root_url, :message => { :notice => "Your account has been activated.  Welcome to Repertoire." }
     end
   
     #
@@ -118,9 +118,9 @@ class RepertoireCore::Users < RepertoireCore::Application
           @user.forgot_password!
           deliver_email(:password_reset_key, @user, {:subject => "Request to change your password"}, 
                                                     {:user => @user,
-                                                     :link => absolute_url(:reset_password, :key => @user.password_reset_key)})
+                                                     :link => absolute_slice_url(:repertoire_core, :reset_password, :key => @user.password_reset_key)})
         end
-        redirect '/', :message => { :notice => "We've emailed a link to reset your password." }
+        redirect root_url, :message => { :notice => "We've emailed a link to reset your password." }
       else
         message[:error] = "Unknown user email."
         render :forgot_password
@@ -167,7 +167,7 @@ class RepertoireCore::Users < RepertoireCore::Application
   
       if @user.save
         @user.clear_forgotten_password!
-        redirect '/', :message => { :notice => "Password Changed" }
+        redirect root_url, :message => { :notice => "Password Changed" }
       else
         message[:error] = "Password not changed: Please try again"
         render :reset_password
@@ -238,6 +238,10 @@ class RepertoireCore::Users < RepertoireCore::Application
       from = Merb::Slices::config[:repertoire_core][:email_from]
       RepertoireCore::UserMailer.dispatch_and_deliver(action, params.merge(:from => from, :to => to_user.email), 
                                                       send_params)
+    end
+    
+    def root_url
+      Merb::Config[:path_prefix] || '/'
     end
         
     # Remove password and password_confirmation from the server logs.

@@ -78,7 +78,7 @@ class RepertoireCore::Memberships < RepertoireCore::Application
     status        = (@membership.approved? ? :approve : :deny)
     deliver_email(status, @membership.user, {:subject => "Your request for Repertoire privileges"}, 
                                             {:membership => @membership,
-                                             :link => absolute_url(:user_memberships, session.user.shortname) })
+                                             :link => absolute_slice_url(:repertoire_core, :user_memberships, session.user.shortname) })
 
     redirect slice_url(:repertoire_core, :requests, :shortname => session.user.shortname), 
                        :message => { :notice => 'Your review was recorded, and the user emailed' }
@@ -104,7 +104,7 @@ class RepertoireCore::Memberships < RepertoireCore::Application
         deliver_email(:request, user, {:subject => "Repertoire membership subscription to review"}, 
                                       {:membership => membership, 
                                        :reviewer => user,
-                                       :link => absolute_url(:edit_user_membership, membership.user.shortname, membership.id) })
+                                       :link => absolute_slice_url(:repertoire_core, :edit_user_membership, membership.user.shortname, membership.id) })
       end                                     
       notice = "Reviewers have been notified of your subscription.  You will receive an email reply soon."
     end
@@ -117,7 +117,7 @@ class RepertoireCore::Memberships < RepertoireCore::Application
     membership = session.user.grant(role_name, user, note)
     deliver_email(:grant, user, {:subject => "You have been granted new Repertoire privileges"}, 
                                 {:membership => membership,
-                                 :link => absolute_url(:edit_user_membership, membership.user.shortname, membership.id) })
+                                 :link => absolute_slice_url(:repertoire_core, :edit_user_membership, membership.user.shortname, membership.id) })
     notice = "Grant completed.  The user has been emailed."
     notice
   end

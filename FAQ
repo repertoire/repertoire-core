@@ -14,26 +14,19 @@ end
 
 Q. How do I add or replace user lookup services?
 
-A. By default, Repertoire core looks up user domains in the Whois database
-when they activate their email address. This allows it to associate users with
-institutions, robustly offloading the task of checking credentials and other
-security to the institution's email login system. (Kudos to Facebook for
-figuring out such a low-maintenance and difficult to spoof system for
-determining institutional credentials.) To add another user identification
-service, declare a helper class that updates the user's fields and returns a
-non-nil value on success.
-
-class MyLookupHelper
-  def lookup!(user)
-    case user.email    # a real example would probably access an outside directory service (e.g. ldap or finger)
-    when /@mit.edu$/: user.institution_code = "MIT-2"
-    else nil
-    end
-  end
-end
+A. By default, records the domain of the user's email as their insitutional
+affiliation. This allows it to associate users with institutions, robustly
+offloading the task of checking credentials and other security to the
+institution's email login system. To add another user identification service,
+declare a helper class that updates the user's fields and returns a non-nil
+value on success.
 
 Merb::BootLoader.before_app_loads do
-  Merb::Slices::config[:repertoire_core][:lookup_helpers] << MyLookupHelper.new
+  Merb::Slices::config[:repertoire_core][:lookup_helpers] << lambda do |user|
+    case user.email    # a real example would probably access an outside directory service (e.g. ldap or finger)
+    when /@mit.edu$/: user.institution_code = "MIT"
+    else nil
+    end
 end
 
 The lookup handler polls helpers in order, stopping when one succeeds. You can

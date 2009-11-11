@@ -201,7 +201,7 @@ module RepertoireCore
           helpers = RepertoireCore.config[:lookup_helpers]
 
           helpers.detect do |helper|
-            helper.lookup!(self)
+            helper.call(self)
           end
         end
       end

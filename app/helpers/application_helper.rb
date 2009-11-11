@@ -4,7 +4,7 @@ module Merb
 
       # @return a url to identify the given user's profile photo
       def gravatar_image_url(email, size=40)
-        default_gravatar_uri = request.protocol + '://' + request.host + public_path_for('images/gravatar.png')
+        default_gravatar_uri = request.protocol + "://#{request.host}#{Merb::Config[:path_prefix]}/images/rep.core/gravatar.png"
         return default_gravatar_uri if email.nil?
         
         email_md5 = Digest::MD5.hexdigest(email)

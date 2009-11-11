@@ -9,7 +9,7 @@ class Membership
   property   :user_note,                Text
 
   # reviewer's decision
-  belongs_to :reviewer, :class_name => 'User', :child_key => [:reviewer_id], :nullable => true
+  belongs_to :reviewer, :model => 'User', :child_key => [:reviewer_id], :nullable => true
   property :reviewer_note,              Text  
   property :approved_at,                DateTime
   

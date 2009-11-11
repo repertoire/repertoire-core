@@ -4,16 +4,6 @@ include RepertoireCore
 
 describe User do
   
-  WHOIS_MOCK_RESULT = <<-RESULT
-        OrgName:    Massachusetts Institute of Technology 
-        OrgID:      MIT-2
-      RESULT
-  
-  before(:all) do
-    whois_mock = mock("whois").should_receive(:search_whois).any_number_of_times.and_return(WHOIS_MOCK_RESULT)
-    Whois::Whois.should_receive(:initialize).any_number_of_times.and_return(whois_mock)
-  end
-  
   before(:each) do
     User.auto_migrate!
     @hash = valid_user_hash
@@ -93,19 +83,19 @@ describe User do
       @user = User.new(@hash)
     end
     
-    it "should use whois service to lookup institutional affiliation after activation" do
+    it "should set institutional affiliation after activation" do
       @user.save
       @user.activate
       @user.reload
-      @user.institution_code.should == "MIT-2"
-      @user.institution.should      == "Massachusetts Institute of Technology"
+      @user.institution_code.should == "mit.edu"
+#       @user.institution.should      == "Massachusetts Institute of Technology"
     end
     
     it "should wait until activation to lookup institution" do
       @user.save
       @user.reload
       @user.institution_code.should == nil
-      @user.institution.should      == nil
+#       @user.institution.should      == nil
     end
     
   end

@@ -44,7 +44,11 @@ Merb::Config.use do |c|
   
 end
 
+# Shouldn't be necessary... why doesn't Merb require out of the gemspec?
+
 require 'rubygems'
+require 'spec'
+
 require 'merb-core'
 require 'merb-action-args'
 require 'merb-slices'
@@ -52,10 +56,15 @@ require 'merb-assets'
 require 'merb-auth-core'
 require 'merb-auth-more'
 require 'merb-auth-slice-password'
-require 'spec'
+require 'merb-mailer'
+require 'merb-helpers'
 
 require 'dm-core'
 require 'dm-validations'
+require 'dm-timestamps'
+require 'dm-aggregates'
+require 'dm-is-nested_set'
+require 'dm-is-list'
 
 # Configure slices like a real app would
 Merb::Plugins.config[:merb_slices][:auto_register] = true
@@ -100,7 +109,7 @@ Merb::BootLoader.before_app_loads do
 end
  
 Merb::BootLoader.after_app_loads do
-  #DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
+  DataObjects::Sqlite3.logger = DataObjects::Logger.new(STDOUT, 0)
   DataMapper.auto_migrate!
 
   #require 'config/fixtures'
