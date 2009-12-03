@@ -1,16 +1,9 @@
-Installing Repertoire Core into your application gives you access to Hyperstudio user registration, password management, and authorization control features in your merb application.  It also provides a simple set of commonly-used libraries, e.g. jquery and jquery-ui, and Hyperstudio ajax plugins that extend them.
+Installing Repertoire Core into your application gives you access to Hyperstudio user registration, password management, and authorization control features in your merb application.
 
 To install Repertoire Core:
 
-# download and install the gem in your app bundle
-git clone git@github.com:repertoire/repertoire-core.git
-cd repertoire-core
-rake gem
-cd ../yourapp
-gem install ../repertoire-core/pkg/repertoire_core-<version>.gem -i gems/
-
-# add the slice as a regular dependency for your application (dependencies.rb)
-dependency 'repertoire_core', 'version'
+# configure your Gemfile:
+gem "repertoire_core"                   # or pull directly from the git sources on github
 
 # alter your router to mount the Repertoire Core slice
 Merb::Router.prepare do
@@ -35,6 +28,18 @@ end
 # tell Merb's password login slice that you want to use User.email rather than User.login to identify users.  there's already a
 configuration suggestion to do this - just uncomment it (merb/merb-auth/setup.rb)
 Merb::Plugins.config[:"merb-auth"][:login_param]    = :email
+
+# Install the repertoire-assets system: in <app>/config/init.ru (Mongrel) and <app>/config.ru, (Passenger):
+*    require 'repertoire-assets'
+*    use Repertoire::Assets::Processor, Merb::Config, Merb.logger
+     run Merb::Rack::Application.new
+and in <app>/config/environments/production.rb:  
+*    c[:compress_assets] = true
+and in <app>/public/javascripts/application.js:
+//= require <rep.core>
+
+# If Merb installed a useless version of jquery, remove it:
+rm public/javascripts/jquery.js
 
 # Insure that your database is set up according to Repertoire standards, with your application tables loaded into a 
 # separate PostgreSQL schema and connecting by a project-specific user.

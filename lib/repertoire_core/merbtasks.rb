@@ -2,7 +2,7 @@ namespace :slices do
   namespace :repertoire_core do
   
     desc "Install RepertoireCore"
-    task :install => [:preflight, :setup_directories, :copy_assets, :migrate, :login_page]
+    task :install => [:preflight, :setup_directories, :migrate, :login_page]
     
     desc "Test for any dependencies"
     task :preflight do # see slicetasks.rb
