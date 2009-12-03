@@ -1,11 +1,5 @@
 <% # parameters: memberships, an array of membership objects %>
 
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery" %>
-<% require_js "#{::RepertoireCore.public_path_for(:javascript)}/lib/jquery.tablesorter.patched" %>
-
-<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/membership" %>
-<% require_css "#{::RepertoireCore.public_path_for(:stylesheet)}/lib/jquery.tablesorter.blue/style" %>
-
 <script type="text/javascript">
   $(document).ready(function() {
     $("#memberships").tablesorter({
