@@ -29,7 +29,7 @@ end
 configuration suggestion to do this - just uncomment it (merb/merb-auth/setup.rb)
 Merb::Plugins.config[:"merb-auth"][:login_param]    = :email
 
-# Install the repertoire-assets system: in <app>/config/init.ru (Mongrel) and <app>/config.ru, (Passenger):
+# Install the repertoire-assets system: in <app>/config/rack.rb (Mongrel) and <app>/config.ru, (Passenger):
 *    require 'repertoire-assets'
 *    use Repertoire::Assets::Processor, Merb::Config, Merb.logger
      run Merb::Rack::Application.new
