@@ -224,12 +224,14 @@ class RepertoireCore::Users < RepertoireCore::Application
       return [] if prefix.nil?
 
       # raise User.repository.adapter.options[:adapter].inspect
-      
+
       query = case User.repository.adapter.options[:adapter]
-        when 'postgres': "(first_name || ' ' || last_name) ILIKE ? OR shortname ILIKE ?"
-        else             "(first_name || ' ' || last_name) LIKE ? OR shortname LIKE ?"
-      end
-      
+              when 'postgres'
+                "(first_name || ' ' || last_name) ILIKE ? OR shortname ILIKE ?"
+              else
+                "(first_name || ' ' || last_name) LIKE ? OR shortname LIKE ?"
+              end
+
       User.all({:conditions => [query, "%#{prefix}%", "#{prefix}%"],
                 :order => [:last_name, :first_name]}.merge(options))
     end
